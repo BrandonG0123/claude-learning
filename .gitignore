@@ -1,0 +1,8 @@
+# animate pieces: build products and heavy renders stay out of git
+pieces/*/index.html
+pieces/*/frames/
+pieces/*/renders/*.wav
+pieces/*/renders/final*.mp4
+pieces/*/review/*-sheet.jpg
+pieces/*/tile*.png
+references/

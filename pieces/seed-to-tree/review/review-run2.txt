@@ -1,0 +1,46 @@
+shot 1 (day 1: the acorn asleep in the soil; a root pokes out; the spark stirs): 20 frames [0,6,12,18,24,30,36,42,48,54,60,66,72,78,84,90,96,102,108,114] -> review/shot01-sheet.jpg
+shot 2 (week 6: the shell splits, the spark peeks out, the sun comes out): 18 frames [120,126,132,138,144,150,156,162,168,174,180,186,192,198,204,210,216,222] -> review/shot02-sheet.jpg
+shot 3 (year 1 to 5: the sapling steps up a year per tick): 14 frames [228,234,240,246,252,258,264,270,276,282,288,294,300,306] -> review/shot03-sheet.jpg
+shot 4 (the sapling holds; silence): 4 frames [312,318,324,330] -> review/shot04-sheet.jpg
+shot 5 (year 40: the tree (the one hard cut, the loudest hit); the title): 16 frames [336,342,348,354,360,366,372,378,384,390,396,402,408,414,420,426] -> review/shot05-sheet.jpg
+shot 6 (the first acorn falls and lands; loops to the seed): 8 frames [432,438,444,450,456,462,468,474] -> review/shot06-sheet.jpg
+
+CUTS vs beat grid @ 120 BPM, 24fps (8ths = 0.25s)
+ #   cut t     grid  grid#   nominal f  cut f   cut f t     err(f)  Δ@cut  peak(±2f)          shot change           result
+ 1   14.000s   8th    56      336.0    336   14.0000s  +0.0    40.3  f336 ok            shot 4 -> 5           PASS
+all cuts on grid within 1 frame: PASS
+MORPHS: 2 shape-morph bridges at 5, 9.5s, all centred on the 8th grid: PASS
+
+PACING: 1 hard cuts (0 in the last 5s), mean segment 10.00s, shortest 6.00s, plus 0 on-2s montage steps
+FLAT FRAMES (contrast < 6/255): none
+LOOP: diff(last=479, first=0) = 63.27; typical consecutive diff in the first 40 frames = 0.51 (info: F4/F6 loop pixel-exactly and F4 checks it; other formats return to the opening image, changed)
+
+STORY ARC (loudness in dBFS over 100ms windows: median / 90th percentile; music = music stem median)
+ act          role       t0-t1         cuts  cuts/s  motion   mix med  mix p90  music
+ 1 Seed       build      0.00-5.00s      0    0.00     1.6    -24.1    -22.2   -24.1
+ 2 Sprout     journey    5.00-9.50s      0    0.00     1.5    -20.2    -17.0   -20.2
+ 3 Years      peak       9.50-13.00s      0    0.00     3.8    -18.1    -16.7   -18.1
+ 4 Hush       silence    13.00-14.00s      0    0.00     0.3    -70.4    -61.3   -70.4
+ 5 Tree       gift       14.00-18.00s      1    0.25     0.6    -11.7    -10.2   -11.7
+ 6 Acorn      goodbye    18.00-20.00s      0    0.00     0.5    -25.8    -22.7   -25.8
+  info  no cut-rate rule (no hard cuts, or eras joined by morphs): peak motion 3.8 vs max other 1.6 (pixel motion includes noise/boil, so it is not a rule here)
+  PASS  gift is the loudest act (p90 -10.2 vs next -16.7)
+  PASS  gift p90 >= peak p90 + 1 dB (-10.2 vs -16.7): the busiest moment is not the loudest
+  PASS  silence median <= peak median - 15 dB (-70.4 vs -18.1)
+  PASS  gift is held: <= 0.5 cuts/s (0.25)
+  PASS  goodbye decays: median <= gift median - 6 dB (-25.8 vs -11.7)
+story arc: PASS (5/5 rules)
+
+TEXT (every string drawn, traced to screen; 74 frames sampled, morph windows skipped)
+text: PASS (0 cut-off/overlap, 0 in the safe zone)
+
+SOUND (mix: renders/audio.wav)
+  loudest 100ms window: 14.2s (-9.5 dBFS) - in the payoff act 14-18s
+  silence before it: 1.1s at <= -40 dBFS ending 14.0s in the 2s before (craft.md wants 0.5-4s when the story has a turn)
+  loudness: -13.9 LUFS integrated, range 13.9 LU, true peak -1.0 dBFS (phone target about -16 to -14 LUFS, peak <= -1)
+
+DEAD BEATS (the picture's change over 0.5s, every 0.25s; median 2.13, "still" below 0.80; silence acts are exempt)
+dead beats: PASS (0 stretches over 3s)
+PHONE SHEET: review/phone.jpg (one frame a second at 360px wide — read every caption at this size)
+
+video: 1080x1920, 480 frames decoded
