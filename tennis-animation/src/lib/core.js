@@ -50,7 +50,8 @@
   function shake(t, t0, amp, tau = 0.25, freq = 28, seed = 7) { if (t < t0) return { x: 0, y: 0, r: 0 }; const d = Math.exp(-(t - t0) / tau) * amp; const p = (t - t0) * freq; return { x: (noise1(p, seed) * 2 - 1) * d, y: (noise1(p, seed + 1) * 2 - 1) * d, r: (noise1(p, seed + 2) * 2 - 1) * d * 0.002 }; }
 
   // ---------- colour ----------
-  function hexToRgb(hex) { hex = hex.replace('#', ''); if (hex.length === 3) hex = hex.split('').map(c => c + c).join(''); const n = parseInt(hex, 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
+  // accepts '#rgb', '#rrggbb', 'rgb(r,g,b)' and 'rgba(r,g,b,a)' (so lerpColor() output can be fed back into rgba())
+  function hexToRgb(c) { if (c[0] !== '#') { const m = /rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)/.exec(c); if (m) return [+m[1], +m[2], +m[3]]; } let hex = c.replace('#', ''); if (hex.length === 3) hex = hex.split('').map(ch => ch + ch).join(''); const n = parseInt(hex, 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
   function rgba(hex, a = 1) { const [r, g, b] = hexToRgb(hex); return `rgba(${r},${g},${b},${a})`; }
   function lerpColor(h1, h2, t) { const a = hexToRgb(h1), b = hexToRgb(h2); return `rgb(${Math.round(lerp(a[0], b[0], t))},${Math.round(lerp(a[1], b[1], t))},${Math.round(lerp(a[2], b[2], t))})`; }
 
