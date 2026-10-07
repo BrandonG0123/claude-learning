@@ -1,0 +1,745 @@
+{
+ "_comment": "Sound cues per docs/STORYBOARD.md \u00a76. t in seconds (frame/60). db = peak level target inside the mix; master normalises so STRIKE (2.600) and IN (6.200) are the loudest at -1 dBFS.",
+ "cues": [
+  {
+   "t": 0.0,
+   "type": "crowdbed",
+   "dur": 10.0,
+   "db": -14,
+   "note": "murmur bed; level automated below"
+  },
+  {
+   "t": 0.0,
+   "type": "drone",
+   "dur": 1.4,
+   "f": 55,
+   "db": -26
+  },
+  {
+   "t": 0.2,
+   "type": "impact",
+   "intensity": 0.5,
+   "db": -10,
+   "note": "R1 ignition thump"
+  },
+  {
+   "t": 0.2,
+   "type": "tick",
+   "f": 3000,
+   "db": -14
+  },
+  {
+   "t": 0.2,
+   "type": "hum",
+   "f": 120,
+   "dur": 1.2,
+   "db": -26,
+   "pan": -0.5
+  },
+  {
+   "t": 0.45,
+   "type": "impact",
+   "intensity": 0.5,
+   "db": -10,
+   "note": "R2 ignition"
+  },
+  {
+   "t": 0.45,
+   "type": "tick",
+   "f": 3000,
+   "db": -14
+  },
+  {
+   "t": 0.45,
+   "type": "hum",
+   "f": 123,
+   "dur": 0.95,
+   "db": -26,
+   "pan": 0.5
+  },
+  {
+   "t": 0.667,
+   "type": "clicks",
+   "count": 14,
+   "spacing": 0.016667,
+   "f0": 6000,
+   "f1": 6000,
+   "db": -22,
+   "note": "NIGHT SESSION type-on"
+  },
+  {
+   "t": 0.7,
+   "type": "impact",
+   "intensity": 0.7,
+   "db": -7,
+   "note": "R3+R4 ignition"
+  },
+  {
+   "t": 0.7,
+   "type": "tick",
+   "f": 3200,
+   "db": -12
+  },
+  {
+   "t": 0.7,
+   "type": "hum",
+   "f": 118,
+   "dur": 0.7,
+   "db": -24,
+   "pan": -0.3
+  },
+  {
+   "t": 0.7,
+   "type": "hum",
+   "f": 125,
+   "dur": 0.7,
+   "db": -24,
+   "pan": 0.3
+  },
+  {
+   "t": 1.25,
+   "type": "impact",
+   "intensity": 1.0,
+   "db": -6,
+   "note": "lens-rig whiteout boom"
+  },
+  {
+   "t": 1.25,
+   "type": "hiss",
+   "dur": 0.25,
+   "fc": 6000,
+   "db": -12
+  },
+  {
+   "t": 1.25,
+   "type": "chime",
+   "f1": 220,
+   "f2": 330,
+   "dur": 1.2,
+   "db": -18,
+   "note": "ring-out under S2"
+  },
+  {
+   "t": 1.4,
+   "type": "riser",
+   "dur": 1.15,
+   "f0": 200,
+   "f1": 6000,
+   "db": -8,
+   "note": "tension riser, hard-ducked at 2.550"
+  },
+  {
+   "t": 1.6,
+   "type": "heartbeat",
+   "db": -10
+  },
+  {
+   "t": 1.9,
+   "type": "heartbeat",
+   "db": -10
+  },
+  {
+   "t": 2.2,
+   "type": "heartbeat",
+   "db": -10
+  },
+  {
+   "t": 1.633,
+   "type": "whoosh",
+   "dur": 0.12,
+   "f_start": 600,
+   "f_peak": 1200,
+   "f_end": 800,
+   "db": -24,
+   "note": "lower-third"
+  },
+  {
+   "t": 1.633,
+   "type": "tick",
+   "f": 5000,
+   "db": -24
+  },
+  {
+   "t": 2.3,
+   "type": "whoosh",
+   "dur": 0.3,
+   "f_start": 400,
+   "f_peak": 2000,
+   "f_end": 2000,
+   "shape": 0.9,
+   "db": -7,
+   "pan": 0.8,
+   "pan_to": 0.1,
+   "note": "racket swing"
+  },
+  {
+   "t": 2.6,
+   "type": "strike",
+   "intensity": 1.3,
+   "db": -1,
+   "dry": true,
+   "note": "STRIKE"
+  },
+  {
+   "t": 2.6,
+   "type": "fmping",
+   "carrier": 1800,
+   "ratio": 2.1,
+   "index": 3,
+   "dur": 0.06,
+   "db": -8,
+   "dry": true
+  },
+  {
+   "t": 2.6,
+   "type": "impact",
+   "intensity": 0.8,
+   "db": -6,
+   "note": "sub + crowd gasp body"
+  },
+  {
+   "t": 2.6,
+   "type": "ringsweep",
+   "db": -8
+  },
+  {
+   "t": 2.8,
+   "type": "clicks",
+   "count": 24,
+   "spacing": 0.033333,
+   "f0": 5000,
+   "f1": 7000,
+   "db": -26,
+   "note": "speed counter"
+  },
+  {
+   "t": 3.6,
+   "type": "fmping",
+   "carrier": 1046,
+   "ratio": 2.0,
+   "index": 1.5,
+   "dur": 0.08,
+   "db": -18,
+   "note": "counter settle"
+  },
+  {
+   "t": 2.8,
+   "type": "airrush",
+   "dur": 1.75,
+   "db": -5,
+   "pan": -0.3,
+   "pan_to": 0.4
+  },
+  {
+   "t": 4.117,
+   "type": "zip",
+   "f0": 3000,
+   "f1": 6000,
+   "dur": 0.06,
+   "db": -16,
+   "note": "net pass"
+  },
+  {
+   "t": 4.117,
+   "type": "karplus",
+   "f": 90,
+   "dur": 0.15,
+   "db": -14
+  },
+  {
+   "t": 4.25,
+   "type": "clicks",
+   "count": 6,
+   "spacing": 0.016667,
+   "f0": 4000,
+   "f1": 4000,
+   "db": -26,
+   "note": "spin readout"
+  },
+  {
+   "t": 4.55,
+   "type": "bounce",
+   "intensity": 1.2,
+   "db": -4,
+   "dry": true,
+   "note": "BOUNCE"
+  },
+  {
+   "t": 4.55,
+   "type": "hiss",
+   "dur": 0.3,
+   "fc": 4000,
+   "db": -18
+  },
+  {
+   "t": 4.55,
+   "type": "fmping",
+   "carrier": 1047,
+   "ratio": 1.0,
+   "index": 0.3,
+   "dur": 0.6,
+   "decay": 0.25,
+   "shimmer": 0.3,
+   "db": -12,
+   "pan": 0.0,
+   "pan_to": 0.8,
+   "note": "THE PING (R)"
+  },
+  {
+   "t": 4.55,
+   "type": "fmping",
+   "carrier": 1047,
+   "ratio": 1.0,
+   "index": 0.3,
+   "dur": 0.6,
+   "decay": 0.25,
+   "shimmer": 0.3,
+   "db": -12,
+   "pan": 0.0,
+   "pan_to": -0.8,
+   "note": "THE PING (L)"
+  },
+  {
+   "t": 4.55,
+   "type": "roarhold",
+   "rise": 1.65,
+   "hold": 0.0,
+   "fall": 0.01,
+   "db_start": -16,
+   "db_peak": -9,
+   "db": -9,
+   "note": "crowd roar swell to 6.200"
+  },
+  {
+   "t": 4.6,
+   "type": "revcymbal",
+   "dur": 0.4,
+   "db": -14,
+   "note": "time-stop swell ending 5.000"
+  },
+  {
+   "t": 4.567,
+   "type": "sweepdown",
+   "f0": 2000,
+   "f1": 200,
+   "dur": 0.4,
+   "db": -16
+  },
+  {
+   "t": 4.6,
+   "type": "whoosh",
+   "dur": 0.4,
+   "f_start": 300,
+   "f_peak": 900,
+   "f_end": 300,
+   "db": -26,
+   "pan": 0.8,
+   "pan_to": 0.0,
+   "note": "swoop air"
+  },
+  {
+   "t": 5.0,
+   "type": "clicks",
+   "count": 12,
+   "spacing": 0.016667,
+   "f0": 3000,
+   "f1": 7000,
+   "random_pitch": true,
+   "db": -24,
+   "note": "scan-band chatter"
+  },
+  {
+   "t": 5.0,
+   "type": "sweepdown",
+   "f0": 2000,
+   "f1": 200,
+   "dur": 0.2,
+   "db": -22
+  },
+  {
+   "t": 5.2,
+   "type": "fmping",
+   "carrier": 120,
+   "ratio": 1.0,
+   "index": 0.5,
+   "dur": 0.06,
+   "db": -10,
+   "note": "mark recorded stamp"
+  },
+  {
+   "t": 5.2,
+   "type": "tick",
+   "f": 2000,
+   "db": -14
+  },
+  {
+   "t": 5.3,
+   "type": "clicks",
+   "count": 6,
+   "spacing": 0.016667,
+   "f0": 3500,
+   "f1": 3500,
+   "db": -26
+  },
+  {
+   "t": 5.333,
+   "type": "clicks",
+   "count": 6,
+   "spacing": 0.016667,
+   "f0": 3500,
+   "f1": 3500,
+   "db": -26
+  },
+  {
+   "t": 5.367,
+   "type": "clicks",
+   "count": 6,
+   "spacing": 0.016667,
+   "f0": 3500,
+   "f1": 3500,
+   "db": -26
+  },
+  {
+   "t": 5.2,
+   "type": "riser",
+   "dur": 0.7,
+   "f0": 110,
+   "f1": 440,
+   "db": -9,
+   "note": "dive riser"
+  },
+  {
+   "t": 5.5,
+   "type": "heartbeat",
+   "db": -14
+  },
+  {
+   "t": 6.333,
+   "type": "heartbeat",
+   "db": -14,
+   "note": "(suppressed by breath/IN \u2014 kept low)"
+  },
+  {
+   "t": 5.9,
+   "type": "zip",
+   "f0": 1500,
+   "f1": 2200,
+   "dur": 0.16,
+   "db": -28,
+   "note": "dimension bracket"
+  },
+  {
+   "t": 6.067,
+   "type": "chime",
+   "f1": 1320,
+   "f2": 1760,
+   "dur": 0.12,
+   "db": -22,
+   "note": "3 MM lock"
+  },
+  {
+   "t": 6.167,
+   "type": "whoosh",
+   "dur": 0.1,
+   "f_start": 2000,
+   "f_peak": 1500,
+   "f_end": 300,
+   "shape": 0.2,
+   "db": -16,
+   "note": "snap-back reversed whoosh"
+  },
+  {
+   "t": 6.2,
+   "type": "impact",
+   "intensity": 1.3,
+   "db": -1,
+   "dry": true,
+   "note": "IN SLAM"
+  },
+  {
+   "t": 6.2,
+   "type": "ding",
+   "f": 1046,
+   "dur": 0.5,
+   "db": -12,
+   "dry": true
+  },
+  {
+   "t": 6.2,
+   "type": "roarhold",
+   "rise": 0.12,
+   "hold": 0.6,
+   "fall": 1.8,
+   "db_start": -20,
+   "db_peak": -8,
+   "db": -8,
+   "note": "roar jumps +12 dB"
+  },
+  {
+   "t": 6.25,
+   "type": "whistles",
+   "count": 8,
+   "dur": 1.0,
+   "db": -16
+  },
+  {
+   "t": 6.3,
+   "type": "clicks",
+   "count": 2,
+   "spacing": 0.1,
+   "f0": 3000,
+   "f1": 3000,
+   "db": -22,
+   "note": "CALL CONFIRMED"
+  },
+  {
+   "t": 6.3,
+   "type": "zip",
+   "f0": 1000,
+   "f1": 3000,
+   "dur": 0.1,
+   "db": -24
+  },
+  {
+   "t": 6.8,
+   "type": "whoosh",
+   "dur": 0.15,
+   "f_start": 200,
+   "f_peak": 4000,
+   "f_end": 4000,
+   "shape": 0.95,
+   "db": -14,
+   "note": "time resumes"
+  },
+  {
+   "t": 6.8,
+   "type": "hiss",
+   "dur": 0.3,
+   "fc": 3000,
+   "db": -24
+  },
+  {
+   "t": 6.9,
+   "type": "whoosh",
+   "dur": 0.4,
+   "f_start": 400,
+   "f_peak": 3000,
+   "f_end": 3000,
+   "shape": 0.95,
+   "db": -2,
+   "note": "ball-at-lens Doppler"
+  },
+  {
+   "t": 7.3,
+   "type": "bounce",
+   "intensity": 1.2,
+   "db": -6,
+   "note": "muffled thump on the felt"
+  },
+  {
+   "t": 7.317,
+   "type": "whoosh",
+   "dur": 0.18,
+   "f_start": 2000,
+   "f_peak": 1200,
+   "f_end": 300,
+   "shape": 0.15,
+   "db": -18,
+   "note": "felt pull-back"
+  },
+  {
+   "t": 7.6,
+   "type": "bounce",
+   "intensity": 0.6,
+   "db": -10,
+   "note": "period lands"
+  },
+  {
+   "t": 7.8,
+   "type": "bounce",
+   "intensity": 0.5,
+   "db": -16
+  },
+  {
+   "t": 7.867,
+   "type": "bounce",
+   "intensity": 0.4,
+   "db": -22
+  },
+  {
+   "t": 7.9,
+   "type": "impact",
+   "intensity": 1.0,
+   "db": -3,
+   "note": "GAME. slam"
+  },
+  {
+   "t": 7.9,
+   "type": "fmping",
+   "carrier": 300,
+   "ratio": 1.4,
+   "index": 4,
+   "dur": 0.12,
+   "db": -12
+  },
+  {
+   "t": 7.917,
+   "type": "bounce",
+   "intensity": 0.4,
+   "db": -20
+  },
+  {
+   "t": 8.2,
+   "type": "impact",
+   "intensity": 1.0,
+   "db": -3,
+   "note": "SET. slam"
+  },
+  {
+   "t": 8.2,
+   "type": "fmping",
+   "carrier": 340,
+   "ratio": 1.4,
+   "index": 4,
+   "dur": 0.12,
+   "db": -12
+  },
+  {
+   "t": 8.217,
+   "type": "bounce",
+   "intensity": 0.4,
+   "db": -20
+  },
+  {
+   "t": 8.5,
+   "type": "impact",
+   "intensity": 1.2,
+   "db": -1.5,
+   "note": "MATCH slam"
+  },
+  {
+   "t": 8.5,
+   "type": "fmping",
+   "carrier": 380,
+   "ratio": 1.4,
+   "index": 4,
+   "dur": 0.12,
+   "db": -12
+  },
+  {
+   "t": 8.5,
+   "type": "pad",
+   "dur": 1.6,
+   "root": 220,
+   "swell": 0.45,
+   "db": -16,
+   "note": "sting tail"
+  },
+  {
+   "t": 8.517,
+   "type": "bounce",
+   "intensity": 0.5,
+   "db": -18
+  },
+  {
+   "t": 8.6,
+   "type": "bounce",
+   "intensity": 0.4,
+   "db": -22
+  },
+  {
+   "t": 8.7,
+   "type": "hiss",
+   "dur": 0.6,
+   "fc": 6000,
+   "db": -24,
+   "pan": -0.8,
+   "pan_to": 0.8,
+   "note": "specular sweep shimmer"
+  },
+  {
+   "t": 8.9,
+   "type": "whoosh",
+   "dur": 0.12,
+   "f_start": 1000,
+   "f_peak": 1500,
+   "f_end": 1200,
+   "db": -26,
+   "note": "sub-line rule"
+  },
+  {
+   "t": 8.9,
+   "type": "tick",
+   "f": 5000,
+   "db": -26
+  },
+  {
+   "t": 7.6,
+   "type": "hum",
+   "f": 120,
+   "dur": 2.25,
+   "fade_in": 0.6,
+   "db": -30,
+   "note": "hum bed re-introduced"
+  },
+  {
+   "t": 9.85,
+   "type": "clunk",
+   "f": 80,
+   "db": -8,
+   "note": "rigs 1+2 shutdown"
+  },
+  {
+   "t": 9.9,
+   "type": "clunk",
+   "f": 75,
+   "db": -8,
+   "note": "rigs 3+4 shutdown"
+  },
+  {
+   "type": "gain",
+   "t0": 0.0,
+   "t1": 1.2,
+   "db0": -12,
+   "db1": 0,
+   "note": "crowd bed in"
+  },
+  {
+   "type": "gain",
+   "t0": 2.8,
+   "t1": 4.55,
+   "db0": 0,
+   "db1": 2,
+   "note": "bed rises under flight"
+  },
+  {
+   "type": "duck",
+   "t0": 2.55,
+   "t1": 2.6,
+   "db": -60,
+   "note": "riser hard-duck into the strike"
+  },
+  {
+   "type": "duck",
+   "t0": 6.1,
+   "t1": 6.167,
+   "db": -45,
+   "note": "THE BREATH"
+  },
+  {
+   "type": "lpf",
+   "t0": 7.3,
+   "t1": 7.316,
+   "fc": 400,
+   "note": "one frame low-passed at the felt thump"
+  },
+  {
+   "type": "gain",
+   "t0": 9.85,
+   "t1": 9.983,
+   "db0": 0,
+   "db1": -30,
+   "note": "shutdown fade"
+  }
+ ]
+}

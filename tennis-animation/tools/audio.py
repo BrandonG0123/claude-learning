@@ -105,7 +105,111 @@ def swell(rng, dur=1.2, f=220.0, **_):
     s = sum(np.sin(2 * math.pi * f * r * (1 + d / 100) * t) * g for r, g in ((1, 1), (1.5, .5), (2, .4)) for d in (-0.5, 0.5))
     return lowpass(s, 2500) * np.sin(u * math.PI if False else u * math.pi) ** 1.5 * 0.25
 
-INSTRUMENTS = dict(strike=strike, bounce=bounce, whoosh=whoosh, impact=impact, riser=riser, crowd=crowd, roar=roar, tick=tick, sting=sting, drone=drone, swell=swell)
+
+# ---------- storyboard instruments (docs/STORYBOARD.md §6/§7) ----------
+def saw(freq, n):
+    t = t_axis(n); ph = (freq * t) % 1.0; return 2 * ph - 1
+def hum(rng, f=120.0, dur=1.2, fade_in=0.3, fade_out=0.02, **_):
+    """floodlight ballast hum: sawtooth low-passed 600 Hz, slow fade in, hard-ish cut"""
+    n = int(SR * dur); t = t_axis(n)
+    s = lowpass(saw(f, n) + 0.3 * saw(f * 2.003, n), 600)
+    e = np.minimum(1, t / max(fade_in, 1e-3)) * np.minimum(1, (dur - t) / max(fade_out, 1e-3))
+    return s * e * (0.9 + 0.1 * np.sin(2 * math.pi * 1.7 * t))
+def fmping(rng, carrier=1800.0, ratio=2.1, index=3.0, dur=0.06, decay=None, shimmer=0.0, **_):
+    """FM ping: index decays to 0 over the note"""
+    n = int(SR * max(dur, 0.01)); t = t_axis(n); d = decay if decay else dur / 3
+    idx = index * np.exp(-t / d); mod = np.sin(2 * math.pi * carrier * ratio * t)
+    if shimmer: idx = idx + shimmer * np.sin(2 * math.pi * 7 * t)
+    s = np.sin(2 * math.pi * carrier * t + idx * mod)
+    return s * env(n, 0.001, d, curve=3.0)
+def karplus(rng, f=90.0, dur=0.15, damp=0.5, **_):
+    """Karplus-Strong plucked cord"""
+    n = int(SR * dur); D = max(2, int(SR / f)); buf = rng.standard_normal(D) * 0.8; out = np.zeros(n)
+    for i in range(n):
+        v = buf[i % D]; nxt = buf[(i + 1) % D]; out[i] = v; buf[i % D] = damp * (v + nxt) * 0.996
+    return out * env(n, 0.0005, dur * 0.6)
+def heartbeat(rng, f=45.0, gap=0.12, **_):
+    n = int(SR * 0.4); t = t_axis(n)
+    lub = np.sin(2 * math.pi * f * t) * env(n, 0.004, 0.06)
+    i = int(SR * gap); dub = np.zeros(n); dub[i:] = (np.sin(2 * math.pi * f * 0.9 * t) * env(n, 0.004, 0.05) * 0.6)[: n - i]
+    return lowpass(lub + dub, 150)
+def clunk(rng, f=80.0, **_):
+    n = int(SR * 0.12); t = t_axis(n)
+    return np.sin(2 * math.pi * f * t) * env(n, 0.001, 0.035) + noise(n, rng) * env(n, 0.0002, 0.0015) * 0.7 + bandpass(noise(n, rng), 1500, 4000) * env(n, 0.0005, 0.01) * 0.3
+def comb(x, delays_ms=(11, 17, 23), fb=0.4):
+    """sum of feedback comb filters, vectorised per delay block"""
+    out = np.zeros(len(x) + int(SR * 0.8))
+    for dm in delays_ms:
+        D = int(SR * dm / 1000); y = np.zeros(len(out)); y[: len(x)] = x
+        for k in range(D, len(out), D):
+            m = min(D, len(out) - k); y[k:k + m] += fb * y[k - D:k - D + m]
+        out += y / len(delays_ms)
+    return out
+def ringsweep(rng, f0=600.0, f1=80.0, dur=0.35, **_):
+    """shockwave ring: downward sine sweep with a comb tail"""
+    n = int(SR * dur); s = osc(glide(f0, f1, n)) * env(n, 0.002, dur * 0.5, curve=3)
+    return comb(s) * 0.8
+def airrush(rng, dur=1.75, f0=300.0, f1=1200.0, db0=-26.0, db1=-12.0, whistle=2400.0, **_):
+    """flight air-rush: rising bandpassed noise with a thin vibrato whistle; cuts dead at the end"""
+    n = int(SR * dur); u = t_axis(n) / dur
+    nz = sweep_filter(noise(n, rng), lambda x: f0 * (f1 / f0) ** x, 1.6, 2048)
+    lvl = 10 ** ((db0 + (db1 - db0) * u ** 1.5) / 20) / 10 ** (db1 / 20)
+    w = np.sin(2 * math.pi * np.cumsum(whistle + 30 * np.sin(2 * math.pi * 7 * t_axis(n))) / SR) * 0.08 * u
+    out = (nz * 1.4 + w) * lvl; out[-int(SR * 0.005):] *= np.linspace(1, 0, int(SR * 0.005)); return out
+def revcymbal(rng, dur=0.4, **_):
+    """reversed-cymbal swell ending at the cue end"""
+    n = int(SR * dur); u = t_axis(n) / dur
+    s = highpass(noise(n, rng), 2500) * (np.exp(4 * u) - 1) / (math.e ** 4 - 1)
+    s[-int(SR * 0.004):] *= np.linspace(1, 0, int(SR * 0.004)); return s
+def sweepdown(rng, f0=2000.0, f1=200.0, dur=0.4, **_):
+    n = int(SR * dur); return sweep_filter(noise(n, rng), lambda x: f0 * (f1 / f0) ** x, 1.4) * env(n, 0.01, dur * 0.6, curve=2.5)
+def zip_(rng, f0=3000.0, f1=6000.0, dur=0.06, **_):
+    n = int(SR * dur); return osc(glide(f0, f1, n)) * env(n, 0.002, dur * 0.5)
+def chime(rng, f1=1320.0, f2=1760.0, dur=0.12, **_):
+    n = int(SR * dur); t = t_axis(n); return (np.sin(2 * math.pi * f1 * t) + 0.7 * np.sin(2 * math.pi * f2 * t)) * env(n, 0.001, dur * 0.4)
+def ding(rng, f=1046.0, dur=0.5, **_):
+    n = int(SR * dur); t = t_axis(n); return (np.sin(2 * math.pi * f * t) + 0.6 * np.sin(2 * math.pi * f * 2 * t)) * env(n, 0.001, dur * 0.35, curve=3)
+def whistles(rng, count=8, dur=1.0, **_):
+    n = int(SR * dur); out = np.zeros(n)
+    for k in range(count):
+        f = 2000 + 2000 * rng.random(); st = int(rng.random() * n * 0.7); ln = int(SR * (0.08 + 0.12 * rng.random())); ln = min(ln, n - st)
+        t = t_axis(ln); out[st:st + ln] += np.sin(2 * math.pi * (f + 60 * np.sin(2 * math.pi * 9 * t)) * t) * env(ln, 0.01, 0.06) * 0.5
+    return out
+def hiss(rng, dur=0.3, fc=4000.0, **_):
+    n = int(SR * dur); return highpass(noise(n, rng), fc) * env(n, 0.002, dur * 0.4, curve=3)
+def clicks(rng, count=12, spacing=1 / 60, f0=3000.0, f1=7000.0, random_pitch=False, **_):
+    """a train of short ticks (type-on, counters, data chatter)"""
+    n = int(SR * (count * spacing + 0.05)); out = np.zeros(n)
+    for k in range(count):
+        f = f0 + (f1 - f0) * (rng.random() if random_pitch else k / max(1, count - 1)); st = int(SR * k * spacing); ln = int(SR * 0.012)
+        t = t_axis(ln); out[st:st + ln] += np.sin(2 * math.pi * f * t) * env(ln, 0.0005, 0.004)
+    return out
+def pad(rng, dur=1.6, root=220.0, swell=0.5, **_):
+    """detuned pad swelling then decaying (MATCH sting tail)"""
+    n = int(SR * dur); t = t_axis(n); u = t / dur; s = np.zeros(n)
+    for r in (1, 1.5, 2):
+        for d in (-4, 4): s += np.sin(2 * math.pi * root * r * (2 ** (d / 1200)) * t) / r
+    e = np.where(u < swell, (u / swell) ** 1.5, np.exp(-(u - swell) / (1 - swell) * 3.5)); return lowpass(s, 3000) * e * 0.3
+def roarhold(rng, rise=1.65, hold=2.3, fall=1.2, db_start=-16.0, db_peak=-8.0, **_):
+    """crowd roar that rises, then is held frozen (no modulation) for `hold`, then decays"""
+    dur = rise + hold + fall; n = int(SR * dur); t = t_axis(n)
+    p = bandpass(pink(n, rng), 250, 4500, 2) + 0.3 * bandpass(noise(n, rng), 800, 3000, 2)
+    g0, g1 = 10 ** (db_start / 20), 10 ** (db_peak / 20)
+    e = np.where(t < rise, g0 + (g1 - g0) * (t / rise) ** 1.3, np.where(t < rise + hold, g1, g1 * np.exp(-(t - rise - hold) / fall * 3)))
+    mod = np.where(t < rise, 0.85 + 0.15 * np.sin(2 * math.pi * 0.6 * t), np.where(t < rise + hold, 1.0, 0.85 + 0.15 * np.sin(2 * math.pi * 0.6 * t)))
+    return p * e * mod / g1
+def crowdbed(rng, dur=10.0, **_):
+    """murmur bed with formant blips, level automation applied by cues"""
+    n = int(SR * dur); t = t_axis(n)
+    base = bandpass(pink(n, rng), 300, 1800, 1) * (0.8 + 0.2 * np.sin(2 * math.pi * 0.15 * t))
+    blips = np.zeros(n); k = 0
+    while k < int(dur * 4):
+        st = int(rng.random() * n); ln = int(SR * (0.06 + 0.06 * rng.random())); ln = min(ln, n - st)
+        if ln > 100: blips[st:st + ln] += bandpass(noise(ln, rng), 300, 900, 3) * env(ln, 0.01, 0.05) * 0.5
+        k += 1
+    return (base + blips) * 0.5
+
+INSTRUMENTS = dict(hum=hum, fmping=fmping, karplus=karplus, heartbeat=heartbeat, clunk=clunk, ringsweep=ringsweep, airrush=airrush, revcymbal=revcymbal, sweepdown=sweepdown, zip=zip_, chime=chime, ding=ding, whistles=whistles, hiss=hiss, clicks=clicks, pad=pad, roarhold=roarhold, crowdbed=crowdbed, strike=strike, bounce=bounce, whoosh=whoosh, impact=impact, riser=riser, crowd=crowd, roar=roar, tick=tick, sting=sting, drone=drone, swell=swell)
 
 # ---------- mixer ----------
 def pan_gains(pan):
@@ -130,7 +234,25 @@ def reverb(buf, rng, decay=1.1, mix=0.2, predelay=0.012):
         wet = np.fft.irfft(np.fft.rfft(buf[:, ch], N + n) * np.fft.rfft(ir, N + n), N + n)[:N]
         out[:, ch] = buf[:, ch] * (1 - mix) + wet * mix * 0.7
     return out
-def master(buf, peak_db=-1.0, fade_out=0.35):
+def automate(buf, autos):
+    """bus automation: duck{t0,t1,db} (30 ms fades), lpf{t0,t1,fc} (segment low-pass with 5 ms crossfade), gain{t0,t1,db0,db1} (linear-in-dB ramp)"""
+    for a in autos:
+        i0, i1 = int(a['t0'] * SR), int(a['t1'] * SR); i0, i1 = max(0, i0), min(N, i1)
+        if i1 <= i0: continue
+        if a['type'] == 'duck':
+            g = np.ones(N); g[i0:i1] = 10 ** (a['db'] / 20); f = int(SR * 0.03)
+            if f > 0:
+                g[max(0, i0 - f):i0] = np.linspace(1, g[i0], min(f, i0)); g[i1:min(N, i1 + f)] = np.linspace(g[i1 - 1], 1, min(f, N - i1))
+            buf *= g[:, None]
+        elif a['type'] == 'lpf':
+            f = int(SR * 0.005); seg = buf[i0:i1].copy()
+            for ch in range(2): seg[:, ch] = lowpass(seg[:, ch], a['fc'], 2)
+            w = np.ones(i1 - i0); w[:f] = np.linspace(0, 1, f); w[-f:] = np.linspace(1, 0, f)
+            buf[i0:i1] = buf[i0:i1] * (1 - w[:, None]) + seg * w[:, None]
+        elif a['type'] == 'gain':
+            g = np.ones(N); g[i0:i1] = 10 ** (np.linspace(a['db0'], a['db1'], i1 - i0) / 20); g[i1:] = 10 ** (a['db1'] / 20); buf *= g[:, None]
+    return buf
+def master(buf, peak_db=-1.0, fade_out=0.016):
     # gentle bus compression via tanh, normalise, fade tail
     x = np.tanh(buf * 1.1) / math.tanh(1.1)
     x *= (10 ** (peak_db / 20)) / (np.max(np.abs(x)) + 1e-9)
@@ -160,15 +282,18 @@ def main():
     out = sys.argv[1] if len(sys.argv) > 1 else 'out/audio.wav'
     cues = json.load(open(sys.argv[2])) if len(sys.argv) > 2 else DEFAULT_CUES
     if isinstance(cues, dict): cues = cues.get('cues', [])
-    mix = Mix(); rng_master = np.random.default_rng(20251007)
-    for i, c in enumerate(sorted(cues, key=lambda c: c['t'])):
+    mix = Mix(); dry = Mix(); rng_master = np.random.default_rng(20251007); autos = []
+    for i, c in enumerate(sorted(cues, key=lambda c: c['t'] if 't' in c else c.get('t0', 0))):
         kind = c['type']
+        if kind in ('duck', 'lpf', 'gain'): autos.append(c); continue
         if kind not in INSTRUMENTS: print('unknown cue type', kind, file=sys.stderr); continue
         rng = np.random.default_rng(1000 + i * 17)
-        params = {k: v for k, v in c.items() if k not in ('t', 'type', 'gain', 'pan', 'pan_to')}
+        params = {k: v for k, v in c.items() if k not in ('t', 'type', 'gain', 'db', 'pan', 'pan_to', 'dry', 'note')}
         sig = INSTRUMENTS[kind](rng, **params)
-        mix.add(sig, c['t'], gain=c.get('gain', 1.0), pan=c.get('pan', 0.0), pan_to=c.get('pan_to'))
-    x = reverb(mix.buf, rng_master); x = master(x)
+        g = c.get('gain', 1.0) * (10 ** (c['db'] / 20) if 'db' in c else 1.0)
+        (dry if c.get('dry') else mix).add(sig, c['t'], gain=g, pan=c.get('pan', 0.0), pan_to=c.get('pan_to'))
+    x = reverb(mix.buf, rng_master) + dry.buf
+    x = automate(x, autos); x = master(x, fade_out=0.016)
     write_wav(out, x)
     peak = 20 * math.log10(np.max(np.abs(x)) + 1e-9); rms = 20 * math.log10(np.sqrt(np.mean(x ** 2)) + 1e-9)
     print(f'wrote {out}: {len(cues)} cues, {DUR}s stereo {SR}Hz, peak {peak:.1f} dBFS, rms {rms:.1f} dBFS')
