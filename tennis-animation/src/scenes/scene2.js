@@ -10,14 +10,17 @@
   const F = f => f / 60;
   const BALL0 = { x: 820, y: 500 };               // toss position (apex region) and contact position
   const CONTACT = { x: 1000, y: 520 };             // shock-iris centre: where the string plane meets the ball
-  const BOKEH_WARM = lerpColor(PAL.gold, PAL.white, 0.5); // floodlight-warm bokeh (derived from the palette: Gold → White)
+  // hex-returning colour mix (TN.lerpColor returns an rgb() string, which TN.rgba cannot parse — it would silently read as black)
+  const mixHex = (h1, h2, t) => { const a = TN.hexToRgb(h1), b = TN.hexToRgb(h2); return '#' + [0, 1, 2].map(i => Math.round(lerp(a[i], b[i], t)).toString(16).padStart(2, '0')).join(''); };
+  const BOKEH_WARM = mixHex(PAL.gold, PAL.white, 0.5);  // floodlight-warm bokeh (derived from the palette: Gold → White)
+  const HAZE_COOL = mixHex(PAL.navy, PAL.ice, 0.18);     // floodlit haze in the bowl
 
   // =====================================================================================================================
   // Racket swing geometry: the head centre rides a circular arc about a pivot far below the frame (shoulder), inCubic f138→f156,
   // then follows through with a decaying angular rate. The handle always points at the pivot, so the racket rotates as a rigid body.
   // =====================================================================================================================
   const PIVOT = [1600, 2400];
-  const ARC_S = [2300, 640];                        // head centre at f138 (off the right edge)
+  const ARC_S = [2050, 622];                        // head centre at f138: the head's leading rim sits just inside the right frame edge (x ≈ 1905)
   const ARC_E = [1094, 470];                        // head centre at f156: puts the hit point (hitX −0.75, hitY 0) exactly on (1000, 520)
   const polar = p => { const dx = p[0] - PIVOT[0], dy = p[1] - PIVOT[1]; return { th: Math.atan2(dy, dx), r: Math.hypot(dx, dy) }; };
   const PS = polar(ARC_S), PE = polar(ARC_E);
@@ -25,11 +28,13 @@
   const HITX = -0.75, HITY = 0;
   const FT_SWEEP = 560 / PE.r;                      // follow-through: 560 px along the arc over 14 frames, decelerating (outQuad)
   const FT_FRAMES = 14;
-  const RACKET_COLORS = { frame: '#15181D', frame2: '#2A3038', accent: PAL.ball, grip: '#0A0C10', string: 'rgba(240,244,250,0.55)' };
+  const RACKET_COLORS = { frame: '#15181D', frame2: '#2A3038', accent: PAL.ball, grip: '#0A0C10', string: 'rgba(240,244,250,0.72)' };
 
+  // swing timing: a 10 % linear creep (the head drifts in from the edge f138–f146, readable anticipation) under an inCubic whip into the ball
+  const swingU = p => 0.10 * p + 0.90 * p * p * p;
   function racketPose(f) {
     let th, r;
-    if (f <= 156) { const u = E.inCubic(prog(f, 138, 156)); th = lerp(PS.th, PE.th, u); r = lerp(PS.r, PE.r, u); }
+    if (f <= 156) { const u = swingU(prog(f, 138, 156)); th = lerp(PS.th, PE.th, u); r = lerp(PS.r, PE.r, u); }
     else { const u = clamp((f - 156) / FT_FRAMES); th = PE.th - FT_SWEEP * (1 - (1 - u) * (1 - u)); r = PE.r; }
     const x = PIVOT[0] + r * Math.cos(th), y = PIVOT[1] + r * Math.sin(th);
     const angle = Math.atan2(PIVOT[1] - y, PIVOT[0] - x) - Math.PI / 2;        // ctx.rotate(angle) maps the handle (0,1) onto the pivot direction
@@ -88,8 +93,8 @@
   const BOKEH = (() => {
     const rnd = mulberry32(77); const out = [];
     // two floodlight rigs as 5×3 lamp grids (continuity with S1's rigs): near-right (warm, bright) and far-left (cool, dim)
-    const rig = (cx, cy, sx, sy, r, warm, a, par) => { for (let j = 0; j < 3; j++) for (let i = 0; i < 5; i++) out.push({ x: cx + (i - 2) * sx + (rnd() - 0.5) * 6, y: cy + (j - 1) * sy + (rnd() - 0.5) * 5, r: r * (0.9 + 0.2 * rnd()), warm, a: a * (0.8 + 0.3 * rnd()), rot: 0.3 + rnd() * 0.2, par }); };
-    rig(1430, 318, 58, 50, 31, true, 0.5, 0.32); rig(320, 352, 40, 35, 22, false, 0.3, 0.26);
+    const rig = (cx, cy, sx, sy, r, warm, a, par) => { for (let j = 0; j < 3; j++) for (let i = 0; i < 5; i++) out.push({ x: cx + (i - 2) * sx + (rnd() - 0.5) * 14, y: cy + (j - 1) * sy + (rnd() - 0.5) * 12, r: r * (0.8 + 0.4 * rnd()), warm, a: a * (0.55 + 0.6 * rnd()), rot: 0.3 + rnd() * 0.2, par }); };
+    rig(1430, 318, 84, 70, 24, true, 0.72, 0.32); rig(320, 352, 62, 52, 17, false, 0.38, 0.26);
     // scattered bowl lights (signage, phones, concourse) — smaller, dimmer, deeper
     for (let i = 0; i < 24; i++) out.push({ x: 60 + rnd() * 1800, y: 290 + rnd() * 540, r: 9 + rnd() * 18, warm: rnd() < 0.4, a: 0.1 + rnd() * 0.22, rot: rnd() * TAU, par: 0.22 + rnd() * 0.12 });
     return out;
@@ -103,12 +108,12 @@
       const col = b.warm ? BOKEH_WARM : PAL.ice;
       gr.save(); gr.translate(b.x, b.y); gr.rotate(b.rot);
       const hex = (rr) => { gr.beginPath(); for (let k = 0; k < 6; k++) { const a = k / 6 * TAU; k ? gr.lineTo(Math.cos(a) * rr, Math.sin(a) * rr) : gr.moveTo(Math.cos(a) * rr, Math.sin(a) * rr); } gr.closePath(); };
-      const grad = gr.createRadialGradient(0, 0, 0, 0, 0, b.r); grad.addColorStop(0, rgba(col, b.a * 0.78)); grad.addColorStop(0.72, rgba(col, b.a * 0.9)); grad.addColorStop(1, rgba(col, b.a));
+      const grad = gr.createRadialGradient(0, 0, 0, 0, 0, b.r); grad.addColorStop(0, rgba(col, b.a * 0.92)); grad.addColorStop(0.75, rgba(col, b.a * 0.96)); grad.addColorStop(1, rgba(col, b.a));
       hex(b.r); gr.fillStyle = grad; gr.fill();
       hex(b.r + 1); gr.strokeStyle = rgba(PAL.accent2, b.a * 0.5); gr.lineWidth = 2.5; gr.stroke();     // ~1 px cyan fringe (at 1/3 res)
       gr.restore();
     }
-    g.filter = 'blur(3px)'; g.drawImage(raw, 0, 0); g.filter = 'none';
+    g.filter = 'blur(1.6px)'; g.drawImage(raw, 0, 0); g.filter = 'none';   // ≈ 5 px full-res: soft edge, hexagon still legible
     bokehPlate = c; return c;
   }
   // finished ghost wordmark plate (after the reveal completes) — rendered once, half-res, blurred 1 px (= 2 px full-res)
@@ -188,22 +193,24 @@
   function shadeRacket(ctx, P) {
     ctx.save(); ctx.translate(P.x, P.y); ctx.scale(FORE, 1); ctx.rotate(P.angle);
     ctx.beginPath(); ctx.ellipse(0, 0, HW - 8 * RS, HH - 8 * RS, 0, 0, TAU); ctx.clip();
-    ctx.globalCompositeOperation = 'multiply'; const g = ctx.createLinearGradient(-HW, -HH, HW * 0.6, HH); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.45, 'rgba(200,210,225,1)'); g.addColorStop(1, 'rgba(70,80,100,1)');
+    ctx.globalCompositeOperation = 'multiply'; const g = ctx.createLinearGradient(-HW, -HH, HW * 0.6, HH); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.5, 'rgba(228,232,240,1)'); g.addColorStop(1, 'rgba(150,160,185,1)');
     ctx.fillStyle = g; ctx.fillRect(-HW, -HH, 2 * HW, 2 * HH);
     ctx.globalCompositeOperation = 'screen'; const sh = ctx.createLinearGradient(-HW * 0.8, -HH * 0.6, HW * 0.2, HH * 0.1); sh.addColorStop(0, rgba(PAL.ice, 0)); sh.addColorStop(0.5, rgba(PAL.ice, 0.14)); sh.addColorStop(1, rgba(PAL.ice, 0));
     ctx.fillStyle = sh; ctx.fillRect(-HW, -HH, 2 * HW, 2 * HH); ctx.restore();
   }
-  // racket with in-scene motion blur: 8 sub-steps over ~0.9 frame accumulated in a half-res scratch and blurred (a smear, not echoes), then the solid pose
+  // racket with in-scene motion blur: 6 sub-steps over ~0.9 frame accumulated in a half-res scratch and blurred (a smear, not echoes), then the
+  // solid pose. At whip speed (> ~30 px/frame) the solid pose fades toward the smear so the --shutter 4 sub-samples merge instead of stacking as echoes.
   function drawRacketBlurred(ctx, f, deform) {
     const cur = racketPose(f); const prev = racketPose(f - 1); const speed = Math.hypot(cur.x - prev.x, cur.y - prev.y);
+    const fast = clamp((speed - 30) / 160);                                 // 0 at a slow creep, ~0.8 at the contact-frame whip
     if (speed > 6) {
-      const n = 8, span = 0.9, sc = 0.5; const w = W * sc, h = H * sc;
+      const n = 6, span = 0.9, sc = 0.5; const w = W * sc, h = H * sc;
       const A = TN.scratch('s2_rkA', w, h); const ga = A.getContext('2d'); ga.scale(sc, sc);
       for (let i = 1; i <= n; i++) { ga.globalAlpha = 1 / n; racketAt(ga, racketPose(f - span * i / n), deform); }
-      const Bc = TN.scratch('s2_rkB', w, h); const gb = Bc.getContext('2d'); gb.filter = `blur(${clamp(1 + speed * 0.015, 1, 5).toFixed(1)}px)`; gb.drawImage(A, 0, 0); gb.filter = 'none';
-      ctx.save(); ctx.globalAlpha = 0.75; ctx.drawImage(Bc, 0, 0, w, h, 0, 0, W, H); ctx.restore();
+      const Bc = TN.scratch('s2_rkB', w, h); const gb = Bc.getContext('2d'); gb.filter = `blur(${clamp(1 + speed * 0.03, 1, 7).toFixed(1)}px)`; gb.drawImage(A, 0, 0); gb.filter = 'none';
+      ctx.save(); ctx.globalAlpha = lerp(0.75, 1, fast); ctx.drawImage(Bc, 0, 0, w, h, 0, 0, W, H); ctx.restore();
     }
-    racketAt(ctx, cur, deform); shadeRacket(ctx, cur);
+    ctx.save(); ctx.globalAlpha = 1 - 0.7 * fast; racketAt(ctx, cur, deform); shadeRacket(ctx, cur); ctx.restore();
     return cur;
   }
   // RGB split of a small layer (channel copies offset ±amt px, additive)
@@ -226,7 +233,7 @@
     ctx.save();
     // broad floodlit haze in the bowl (cool), low contrast = far away
     TN.glowDot(ctx, 1320, 330, 900, PAL.navy, 0.9, 0.1);
-    TN.glowDot(ctx, 1450, 300, 520, lerpColor(PAL.navy, PAL.ice, 0.18), 0.35, 0.05);
+    TN.glowDot(ctx, 1450, 300, 520, HAZE_COOL, 0.35, 0.05);
     // seating tiers: broad, very soft curved bands (far away = low contrast)
     ctx.globalCompositeOperation = 'screen';
     for (const [yy, hgt, a] of [[372, 70, 0.05], [530, 90, 0.045], [720, 110, 0.03]]) {
@@ -238,6 +245,9 @@
     const orbit = -18 * E.inOutSine(prog(f, 84, 156)); const plate = bokehCanvas();
     ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.9;
     ctx.drawImage(plate, 0, 0, plate.width, plate.height, -60 + orbit, -60, plate.width * 3, plate.height * 3); ctx.restore();
+    // anamorphic streak from the near-right lamp bank (the only real light source in frame), rides the same parallax
+    TN.lightStreak(ctx, 1430 + orbit, 318, 0, 1100, 7, PAL.ice, 0.22, 0.3);
+    TN.glowDot(ctx, 1430 + orbit, 318, 230, PAL.ice, 0.10, 0.05);
     // roof edge: soft dark band y 180–260 with a faint, soft rim-lit lower edge
     ctx.save(); const rg = ctx.createLinearGradient(0, 140, 0, 300); rg.addColorStop(0, rgba(PAL.bg, 0)); rg.addColorStop(0.3, rgba(PAL.bg, 0.9)); rg.addColorStop(0.7, rgba(PAL.bg, 0.9)); rg.addColorStop(1, rgba(PAL.bg, 0));
     ctx.fillStyle = rg; ctx.fillRect(-40, 140, W + 80, 160);
@@ -271,7 +281,7 @@
     TN.drawBall(ctx, B.x, B.y, B.r, opts);
     shadeBall(ctx, B);
     iceRim(ctx, B, [0.72, 0.52], 0.4);                                    // cyan-tinted second rim pass (opposite the key, wrapping toward the bowl light)
-    iceRim(ctx, B, [0.6, -0.7], 0.14);                                    // faint kicker from the floodlit bowl, upper right
+    iceRim(ctx, B, [0.6, -0.7], 0.2);                                     // kicker from the floodlit lamp bank, upper right
     macroFuzz(ctx, B, 1);
     ctx.restore();
     if (f < 156) leanFibres(ctx, B, prog(f, 146, 156));
@@ -335,5 +345,6 @@
       // --- CONTACT flash: 2 frames, .70 then .35 (drawn by the scene; the shock iris composites over it) ---
       if (fi === 156) TN.flash(ctx, 0.70, PAL.white); else if (fi === 157) TN.flash(ctx, 0.35, PAL.white);
     },
+    _debug: { racketPose, ballState, racketDeform },
   };
 })();
