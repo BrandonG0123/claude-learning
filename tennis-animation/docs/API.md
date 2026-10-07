@@ -22,7 +22,8 @@ Rules that keep the render deterministic (frames are rendered out of order, on s
 
 ## Constants & palette
 `TN.W=1920, TN.H=1080, TN.FPS=60, TN.DURATION=10, TN.TAU`.
-`TN.PAL`: `bg #06101F, bg2 #0B1B33, navy, court #1F5FAE, courtDeep, apron #2B7A5A, apronDeep, line #F4F7FA, net, ball #DFFF00, ballMid, ballDeep #8E9F00, ballShadow, accent #FF3D6E, accent2 #39E0FF, white, text, mute #8FA3BF, gold #FFC857` (the storyboard may override values; always reference `TN.PAL.x`, never hex literals for brand colours).
+`TN.PAL` (set in `src/brand.js`, see docs/STORYBOARD.md §2): `bg` Stadium Black #070A14, `navy` Hawk Navy #0B1530, `apron` #14264F, `apronDeep`, `court` Court Royal #1E3F8F, `courtDeep`, `courtSheen` #2A58C9, `line`/`text` #F4F6FA, `net`, `ball` Optic Yellow #DFFF00, `ballHi` #EFFF8A, `ballMid`, `ballDeep`, `ballShadow`, `accent2` Hawk Cyan #5FE0FF, `ice` Flare Ice #BFE9FF, `mute` Steel Blue #9FB3D9, `accent` Live Red #FF3B6B, `white`, `ink` #1A2240. Always reference `TN.PAL.x`, never hex literals for brand colours. `TN.BALL_COLORS` is the standard felt-ball colour set for `drawBall({colors: TN.BALL_COLORS})`.
+`TN.S4S5` (brand.js): `period()`, `periodDrop()`, `ball(gt)` — the shared ball/period handoff between scene4, scene5 and the irisTravel transition. `TN.S5.black` flag for the final frame. `TN.F(frame)` → seconds.
 
 ## core.js — math / easing / randomness / colour
 - `clamp(v,a=0,b=1)`, `lerp(a,b,t)`, `invLerp(a,b,v)`, `remap(v,a,b,c,d,clamp=true)`, `smoothstep(a,b,v)`
@@ -65,14 +66,14 @@ Rules that keep the render deterministic (frames are rendered out of order, on s
 - `motes(ctx,t,{count,seed,color,alpha,size,drift:[vx,vy],area:[x,y,w,h],twinkle})` ambient dust in light.
 
 ## text.js — typography & kinetic type
-- `FONTS`: `display` "Barlow Condensed" (900/600/500), `displayAlt` "Bebas Neue", `heavy` "Anton", `ui` "Inter Display" (100–900), `body` "Inter", `mono` "Space Mono" (400/700), `oswald`.
+- `FONTS`: `display` "Barlow Condensed" (900/600/500), `displayAlt` "Bebas Neue" (400), `heavy` "Anton" (400), `mono` "Space Mono" (400/700), `oswald` "Oswald" (200–700 variable), `body` "Barlow" (500/700), `ui` = Barlow Condensed. No Inter.
 - `text(ctx,str,x,y,{size,family,weight,color,align:'left'|'center'|'right',spacing,baseline,style,alpha,stroke,strokeWidth})` draws with manual letter-spacing; returns width. `measure(ctx,str,opts)`.
 - `kinetic(ctx,str,x,y,{t,t0,dur=0.35,stagger=0.04,order:'ltr'|'rtl'|'center'|'random',ease,anim,...textOpts})` per-character animation; `anim(i,n,ctx,{x,y,w,p,ch,size})` mutates ctx before the glyph is drawn with local progress p. Presets in `ANIM`: `slam`, `riseMask` (rise from a clipped baseline), `dropIn`, `flipX`, `blurIn`, `trackIn`, `glitch`.
 - `wipeText(ctx,str,x,y,p,{...textOpts,bar})` horizontal wipe reveal with optional leading bar. `rollingNumber(ctx,value,x,y,p,{decimals,size,family,color,align,spacing})` digits spin until p→1. `tag(ctx,str,x,y,{size,color,accent,family,weight,spacing,p,align})` broadcast caption with underline bar.
 
 ## transitions.js (used by the timeline, not by scenes)
-`TN.TRANSITIONS[type](ctx,A,B,p,params)`: `cut, crossfade, flash{color,peak,hold}, ballWipe{cx,cy,color,ring}, whip{angle,dist,streak,color}, slice{n,angle,stagger,color,edge}, grid{cols,rows,from,color,jitter}, zoomPunch{cx,cy,flashColor,strength}, glitch{swap,slices,seed,amount}, mesh{cell,seed,color}, iris{cx,cy,soft,reverse}, push{angle,edge,edgeW}`.
+`TN.TRANSITIONS[type](ctx,A,B,p,params)`: `cut, crossfade, flash{color,peak,hold}, ballWipe{cx,cy,color,ring}, whip{angle,dist,streak,color}, slice{n,angle,stagger,color,edge}, grid{cols,rows,from,color,jitter}, zoomPunch{cx,cy,flashColor,strength}, glitch{swap,slices,seed,amount}, mesh{cell,seed,color}, iris{cx,cy,soft,reverse}, push{angle,edge,edgeW}`, plus the storyboard's `shockIris{cx,cy,rMax,zoom,echo}`, `scanWipe{color,bandW,tail}`, `irisTravel{x0,y0,r0,r1,to}`.
 A transition overlaps the two scenes: during `[start,end)` both scenes render (each with its own local time) and the transition composes them. Scenes must therefore render sensibly a little before their start and after their end (clamp or keep drawing their last state).
 
 ## timeline.js
-`TN.TIMELINE = { scenes:[{name,start,end}], transitions:[{from,to,start,end,type,params}], post:{vignette,grain,aberration,letterbox,bloom?}, postAt?(t)→partial post overrides }`.
+`TN.TIMELINE = { scenes:[{name,start,end}], transitions:[{from,to,start,end,type,params}], post:{vignette,grain,aberration,letterbox,bloom?}, postAt?(t)→partial post overrides }` — already written per the storyboard (§7); scenes do not touch it. Scenes receive `render(ctx, t, gt)`: `t` is scene-local, `gt` absolute; key all frame numbers from the storyboard off `gt` (`f = Math.round(gt*60)`).

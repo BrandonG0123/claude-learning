@@ -78,5 +78,38 @@
     const e = E.inOutQuint(p); const dx = Math.cos(angle) * W * e, dy = Math.sin(angle) * H * e; ctx.drawImage(A, dx, dy); ctx.drawImage(B, dx - Math.cos(angle) * W, dy - Math.sin(angle) * H);
     if (edge && p > 0 && p < 1) { ctx.save(); ctx.fillStyle = edge; if (Math.abs(Math.cos(angle)) > 0.5) ctx.fillRect(dx - (Math.cos(angle) > 0 ? edgeW : 0), 0, edgeW, H); else ctx.fillRect(0, dy - (Math.sin(angle) > 0 ? edgeW : 0), W, edgeW); ctx.restore(); }
   };
+  // ---- storyboard-specific transitions (docs/STORYBOARD.md §4) ----
+  // T2 string-bed shockwave iris: the strike IS the cut. A ring expands from the contact point revealing B inside; A continues outside under radial zoom blur.
+  T.shockIris = (ctx, A, B, p, { cx = 1000, cy = 520, rMax = 1400, zoom = 0.06, echo = true, color = TN.PAL.ball } = {}) => {
+    const r = E.outCubic(p) * rMax;
+    radialZoomBlur(ctx, A, cx, cy, zoom * Math.sin(p * Math.PI), 8, 1);
+    if (r > 0) { ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.clip(); ctx.drawImage(B, 0, 0); ctx.restore(); }
+    const early = p < 2 / 12; // over the white contact flash use 'screen' so the ring does not blow out
+    ctx.save(); ctx.globalCompositeOperation = early ? 'screen' : 'lighter'; ctx.shadowColor = rgba(color, 0.95); ctx.shadowBlur = 30;
+    ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = lerp(14, 3, p); ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.stroke();
+    if (echo) { const re = E.outCubic(clamp(p - 0.25)) * rMax; if (re > 1) { ctx.globalAlpha = 0.5; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(cx, cy, re, 0, TAU); ctx.stroke(); } }
+    ctx.restore();
+  };
+  // T3 scan-band wipe: a cyan band sweeps top→bottom revealing B above it.
+  T.scanWipe = (ctx, A, B, p, { color = TN.PAL.accent2, bandW = 4, tail = 60 } = {}) => {
+    const y = E.inOutQuad(p) * (H + 120) - 60;
+    ctx.drawImage(A, 0, 0);
+    if (y > 0) { ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, y); ctx.clip(); ctx.drawImage(B, 0, 0); ctx.restore(); }
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    const g = ctx.createLinearGradient(0, y - tail, 0, y); g.addColorStop(0, rgba(color, 0)); g.addColorStop(1, rgba(color, 0.35)); ctx.fillStyle = g; ctx.fillRect(0, y - tail, W, tail);
+    ctx.shadowColor = rgba(color, 1); ctx.shadowBlur = 24; ctx.fillStyle = rgba(color, 1); ctx.fillRect(0, y - bandW / 2, W, bandW);
+    ctx.shadowBlur = 0; ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.fillRect(0, y - 0.5, W, 1);
+    ctx.restore();
+  };
+  // T4 part B travelling iris: a circle shrinks exponentially from r0 to r1 while moving from (x0,y0) to `to` (fn or point). A inside, B outside.
+  T.irisTravel = (ctx, A, B, p, { x0 = W / 2, y0 = H / 2, r0 = 1800, r1 = 22, to = null, color = TN.PAL.ball } = {}) => {
+    const dest = typeof to === 'function' ? to() : (to || TN.S4S5.periodDrop());
+    const e = E.inOutCubic(p); const cx = lerp(x0, dest.x, e), cy = lerp(y0, dest.y, e); const r = r0 * Math.pow(r1 / r0, e);
+    ctx.drawImage(B, 0, 0);
+    ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.clip(); ctx.drawImage(A, 0, 0);
+    if (p < 2 / 12) { ctx.fillStyle = `rgba(0,0,0,${p < 1 / 12 ? 0.15 : 0.075})`; ctx.fillRect(0, 0, W, H); } // 2-frame thump
+    ctx.restore();
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.shadowColor = rgba(color, 1); ctx.shadowBlur = 30; ctx.globalAlpha = lerp(0.8, 0.3, p); ctx.strokeStyle = rgba(color, 1); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.stroke(); ctx.restore();
+  };
   TN.TRANSITIONS = T;
 })();

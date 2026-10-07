@@ -33,6 +33,7 @@
 <script src="lib/particles.js"></script>
 <script src="lib/text.js"></script>
 <script src="lib/transitions.js"></script>
+<script src="brand.js"></script>
 <script src="scenes/scene1.js"></script>
 <script src="scenes/scene2.js"></script>
 <script src="scenes/scene3.js"></script>
@@ -42,8 +43,9 @@
 <script>
 (function () {
   const TN = window.TN; const canvas = document.getElementById('stage'); const ctx = canvas.getContext('2d', { alpha: false });
-  const FONT_LOADS = ['900 100px "Barlow Condensed"', '600 100px "Barlow Condensed"', '500 100px "Barlow Condensed"', '700 100px "Barlow"', '500 100px "Barlow"', '400 100px "Bebas Neue"', '400 100px "Anton"', '700 100px "Oswald"', '400 100px "Space Mono"', '700 100px "Space Mono"', '900 100px "Inter Display"', '700 100px "Inter"'];
-  window.__ready = Promise.all(FONT_LOADS.map(f => document.fonts.load(f).catch(() => null))).then(() => document.fonts.ready).then(() => { window.__fontsLoaded = true; return true; });
+  const FONT_LOADS = ['900 100px "Barlow Condensed"', '600 100px "Barlow Condensed"', '500 100px "Barlow Condensed"', '700 100px "Barlow"', '500 100px "Barlow"', '400 100px "Bebas Neue"', '400 100px "Anton"', '700 100px "Oswald"', '400 100px "Space Mono"', '700 100px "Space Mono"'];
+  // every face must really be loaded before frame 0: a missing font throws → pageerror → the render fails loudly instead of silently falling back
+  window.__ready = Promise.all(FONT_LOADS.map(f => document.fonts.load(f))).then(() => document.fonts.ready).then(() => { const missing = FONT_LOADS.filter(f => !document.fonts.check(f)); if (missing.length) throw new Error('fonts not loaded: ' + missing.join(', ')); window.__fontsLoaded = true; return true; });
   // render a frame at time t (seconds). shutter = motion-blur sub-samples (1 = none). Deterministic.
   window.__render = function (t, shutter = 1, shutterAngle = 0.5) {
     if (shutter <= 1) { TN.renderFrame(ctx, t); return; }
