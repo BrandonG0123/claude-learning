@@ -1,0 +1,1 @@
+(function(){ const TN=window.TN; TN.scenes=TN.scenes||{}; TN.scenes.scene3={ render(ctx,t){ TN.bgGradient(ctx,TN.PAL.bg2,TN.PAL.bg); TN.text(ctx,'SCENE 3  t='+t.toFixed(2),TN.W/2,TN.H/2,{size:120,color:TN.PAL.ball}); } }; })();

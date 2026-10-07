@@ -1,0 +1,15 @@
+{
+  "name": "tennis-animation",
+  "version": "1.0.0",
+  "private": true,
+  "description": "10-second procedurally rendered tennis motion-graphics video (Canvas 2D → Playwright → ffmpeg)",
+  "scripts": {
+    "render": "node tools/render.cjs --shutter 4 --workers 3",
+    "render:fast": "node tools/render.cjs --shutter 1 --workers 3 --jpg",
+    "audio": "python3 -I tools/audio.py out/audio.wav",
+    "encode": "bash tools/encode.sh out/frames out/tennis out/audio.wav",
+    "contact": "bash tools/contact.sh",
+    "build": "npm run render && npm run audio && npm run encode",
+    "preview": "npx http-server . -p 8080 -o /src/index.html"
+  }
+}
