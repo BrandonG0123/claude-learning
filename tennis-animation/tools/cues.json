@@ -176,7 +176,7 @@
    "t": 2.6,
    "type": "strike",
    "intensity": 1.3,
-   "db": -1,
+   "db": 0.5,
    "dry": true,
    "note": "STRIKE"
   },
@@ -260,7 +260,7 @@
    "t": 4.55,
    "type": "bounce",
    "intensity": 1.2,
-   "db": -4,
+   "db": -5,
    "dry": true,
    "note": "BOUNCE"
   },

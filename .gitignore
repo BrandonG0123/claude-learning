@@ -5,3 +5,4 @@ tennis-animation/out/contact/
 tennis-animation/out/qa/
 node_modules/
 *.log
+tennis-animation/out/audio.wav
