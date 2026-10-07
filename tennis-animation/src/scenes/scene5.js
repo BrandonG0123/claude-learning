@@ -6,15 +6,15 @@
   const F = f => f / 60;
 
   // ---------- constants ----------
-  const BASE = 600;                       // type baseline = the contact plane the ball lands on
-  const HORIZON = 670;                    // the lit floor plane starts here (bottom 38 %)
+  const BASE = 600;                       // type baseline = the glossy floor plane the ball lands on (dust, rings, reflection all live here)
+  const HORIZON = 670;                    // the lit part of the floor plane starts brightening here (bottom 38 %)
   const BALL_R = 22;                      // the 44 px ball that is the period after MATCH
   const TYPE = { size: 220, family: FONTS.displayAlt, weight: 400, spacing: 4 };
   const TYPE_BOT = '#D6DCE8';             // §4 S5: glyph gradient bottom stop (storyboard literal, not a brand key)
   const RIG_X = [320, 760, 1160, 1600], RIG_Y = 40;
   const RIG_CUT = [591, 594, 594, 591];   // T5: outer pair cuts at f591, inner pair at f594
   const CONES = RIG_X.map(x => ({ x, y: RIG_Y, ang: Math.PI / 2 - ((W / 2 - x) / W) * 0.22, spread: 0.44, len: 1260 }));
-  const SLAMS = [474, 492, 510];          // word hit frames (GAME. / SET. / MATCH)
+  const SLAMS = [474, 492, 510];          // word hit frames (GAME. / SET. / MATCH): the word first exists on this frame
   // ball contacts: [frame, squash, dust count]. f456/f468/f472 are the storyboard's bounces; the rest are the hop launches/landings around each slam
   const CONTACTS = [[456, 0.22, 12], [468, 0.12, 12], [472, 0.05, 6], [474, 0.10, 0], [480, 0.08, 6], [492, 0.10, 0], [498, 0.08, 6], [510, 0.16, 0], [516, 0.14, 8]];
   // floor camera for the faint perspective court lines (storyboard's [0,−9,1.4]→[0,4,0] leaves only the centre line inside the band; this one puts the service T, sidelines and baseline in it)
@@ -60,26 +60,29 @@
     const t = (Math.min(f, 472) - 450) / 60; const base = 0.5 + t * 2.6;
     return f <= 472 ? base : base + ((f - 472) / 60) * (10 * Math.PI / 180);
   }
+  const ballY = f => BASE - BALL_R - ballH(f);
 
   // ---------- words ----------
-  // word state for hit frame `hit`: scale 1.6 → 1.0 (inCubic over the 5 frames before the hit, continuous for the shutter), 2-frame 0.97 undershoot on the hit, alpha 0.5 → 1 by the second frame
+  // word state for hit frame `hit`: nothing before the hit frame; on it the word exists at scale 1.6 (alpha .55 for that one frame, 1 from the next),
+  // scale 1.6 → 1.0 inCubic over the 5 frames hit..hit+5 (continuous for the shutter), 2-frame 0.97 undershoot on hit+5/hit+6, 1.0 from hit+7
   function wordState(f, fi, hit) {
-    const ki = fi - (hit - 5); if (ki < 0) return null;
-    const kf = Math.max(0, f - (hit - 5));
-    const scale = kf < 5 ? 1.6 - 0.6 * E.inCubic(kf / 5) : ki < 7 ? 0.97 : 1;
-    return { scale, alpha: ki === 0 ? 0.5 : 1 };
+    if (fi < hit) return null;
+    const kf = Math.max(0, f - hit), ki = fi - hit;
+    const scale = ki < 5 ? 1.6 - 0.6 * E.inCubic(Math.min(kf, 5) / 5) : ki < 7 ? 0.97 : 1;
+    return { scale, alpha: ki === 0 ? 0.55 : 1, flash: ki === 5 ? 0.3 : ki === 6 ? 0.15 : 0 };   // 2-frame Flare Ice catch-light as the stamp lands
   }
-  function drawWord(g, w, scale, alpha, dim) {
+  function drawWord(g, w, scale, alpha, dim, flash = 0) {
     const cx = w.x + w.w / 2, cy = BASE - L.cap / 2;
     g.save(); g.globalAlpha = alpha; g.translate(cx, cy); g.scale(scale, scale); g.translate(-cx, -cy);
     const o = { size: L.size, family: TYPE.family, weight: TYPE.weight, spacing: L.sp, align: 'left' };
     if (dim < 1) TN.text(g, w.s, w.x, BASE - 1, Object.assign({ color: lerpColor(PAL.ice, PAL.ink, dim) }, o));         // 1 px Flare Ice top edge (offset pass)
     const gr = g.createLinearGradient(0, BASE - L.cap, 0, BASE); gr.addColorStop(0, lerpColor(PAL.line, PAL.ink, dim)); gr.addColorStop(1, lerpColor(TYPE_BOT, PAL.ink, dim));
     TN.text(g, w.s, w.x, BASE, Object.assign({ color: gr }, o));
+    if (flash > 0 && dim < 1) TN.text(g, w.s, w.x, BASE, Object.assign({ color: PAL.ice, alpha: flash }, o));
     g.restore();
   }
   function slamShake(fi) {                 // 6 px, 2 frames, designed (not noisy) so the stamp reads as a downward hit
-    for (let i = 0; i < SLAMS.length; i++) { const k = fi - SLAMS[i]; const sgn = i % 2 ? -1 : 1; if (k === 0) return { x: -6 * sgn, y: 4, r: -0.002 * sgn }; if (k === 1) return { x: 3 * sgn, y: -2, r: 0.001 * sgn }; }
+    for (let i = 0; i < SLAMS.length; i++) { const k = fi - SLAMS[i]; const sgn = i % 2 ? -1 : 1; const amp = i === 2 ? 1.3 : 1; if (k === 0) return { x: -6 * sgn * amp, y: 4 * amp, r: -0.002 * sgn }; if (k === 1) return { x: 3 * sgn * amp, y: -2 * amp, r: 0.001 * sgn }; }
     return { x: 0, y: 0, r: 0 };
   }
 
@@ -116,7 +119,7 @@
       const d = cone.len * v, halfW = Math.tan(cone.spread / 2) * d; const u = (hash2(i, 2) * 2 - 1) * 0.9 + Math.sin(gt * (0.5 + hash2(i, 4)) + i) * 0.08;
       const px = cone.x + Math.cos(cone.ang) * d - Math.sin(cone.ang) * halfW * u, py = cone.y + Math.sin(cone.ang) * d + Math.cos(cone.ang) * halfW * u;
       const tw = 0.6 + 0.4 * Math.sin(gt * (2 + 3 * hash2(i, 5)) + i * 1.7);
-      ctx.globalAlpha = 0.32 * lv * Math.sin(Math.PI * v) * tw; ctx.beginPath(); ctx.arc(px, py, lerp(1, 2.4, hash2(i, 6)), 0, TAU); ctx.fill();
+      ctx.globalAlpha = 0.36 * lv * Math.sin(Math.PI * v) * tw; ctx.beginPath(); ctx.arc(px, py, lerp(1, 2.4, hash2(i, 6)), 0, TAU); ctx.fill();
     }
     ctx.restore();
   }
@@ -132,11 +135,12 @@
       TN.lightStreak(ctx, x, y, 0, 340, 5, PAL.ice, 0.32 * b, 0.4);
     }
   }
-  function drawBeams(ctx, rig) {           // soft volumetric cones: 1/3-res buffer, blurred there, composited additively
+  function drawBeams(ctx, rig) {           // soft volumetric cones: 1/3-res buffer, blurred there, composited additively. hot near the lamp, thinning toward the floor
     const sc = 1 / 3, bw = Math.round(W * sc), bh = Math.round(H * sc);
     const a = TN.scratch('s5_beamsA', bw, bh); const ga = a.getContext('2d'); ga.scale(sc, sc); let any = false;
     for (let i = 0; i < 4; i++) { const b = rig[i]; if (b <= 0) continue; any = true; const c = CONES[i];
-      TN.lightCone(ga, c.x, c.y, c.ang, c.spread, c.len, PAL.ice, 0.075 * b); TN.lightCone(ga, c.x, c.y, c.ang, c.spread * 0.45, c.len, PAL.ice, 0.06 * b); }
+      TN.lightCone(ga, c.x, c.y, c.ang, c.spread, c.len, PAL.ice, 0.075 * b); TN.lightCone(ga, c.x, c.y, c.ang, c.spread * 0.45, c.len, PAL.ice, 0.06 * b);
+      TN.lightCone(ga, c.x, c.y, c.ang, c.spread * 0.8, 380, PAL.ice, 0.07 * b); }
     if (!any) return;
     const bbuf = TN.scratch('s5_beams', bw, bh); const gb = bbuf.getContext('2d'); gb.filter = 'blur(3px)'; gb.drawImage(a, 0, 0);
     ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.drawImage(bbuf, 0, 0, bw, bh, 0, 0, W, H); ctx.restore();
@@ -144,17 +148,21 @@
   function drawFloor(ctx, rig, floorOn) {
     const lit = floorOn * (rig[0] + rig[1] + rig[2] + rig[3]) / 4; if (lit <= 0) return;
     ctx.save();
-    // Court Royal → Stadium Black plane from the horizon down
-    const g = ctx.createLinearGradient(0, HORIZON - 14, 0, H); g.addColorStop(0, rgba(PAL.courtDeep, 0)); g.addColorStop(0.07, rgba(PAL.courtDeep, 0.42 * lit)); g.addColorStop(0.4, rgba(PAL.courtDeep, 0.22 * lit)); g.addColorStop(1, rgba(PAL.bg, 0));
-    ctx.fillStyle = g; ctx.fillRect(-50, HORIZON - 14, W + 100, H - HORIZON + 64);
-    // specular pools where each cone meets the floor (the brightest thing on the floor)
-    for (let i = 0; i < 4; i++) { const b = rig[i] * floorOn; if (b <= 0) continue; const c = CONES[i]; const tt = (790 - c.y) / Math.sin(c.ang); const px = c.x + Math.cos(c.ang) * tt;
-      ctx.save(); ctx.translate(px, 790); ctx.scale(1, 0.22); TN.glowDot(ctx, 0, 0, 360, PAL.court, 0.55 * b); TN.glowDot(ctx, 0, 0, 200, PAL.courtSheen, 0.35 * b); TN.glowDot(ctx, 0, 0, 90, PAL.ice, 0.12 * b); ctx.restore(); }
-    // faint perspective court lines, only where the plane is lit, fading in below the horizon
-    ctx.beginPath(); ctx.rect(-50, HORIZON - 10, W + 100, H); ctx.clip(); ctx.globalAlpha = 0.11 * lit; ctx.fillStyle = PAL.line;
+    // one plane from the baseline down: near-black at the type's feet, brightening through the horizon into the Court Royal pools, back to Stadium Black at the bottom
+    const st = y => (y - BASE) / (H - BASE);
+    const g = ctx.createLinearGradient(0, BASE, 0, H);
+    g.addColorStop(0, rgba(PAL.courtDeep, 0)); g.addColorStop(st(645), rgba(PAL.courtDeep, 0.05 * lit)); g.addColorStop(st(HORIZON), rgba(PAL.courtDeep, 0.15 * lit));
+    g.addColorStop(st(720), rgba(PAL.courtDeep, 0.42 * lit)); g.addColorStop(st(900), rgba(PAL.courtDeep, 0.22 * lit)); g.addColorStop(1, rgba(PAL.bg, 0));
+    ctx.fillStyle = g; ctx.fillRect(-50, BASE, W + 100, H - BASE + 50);
+    // faint perspective court lines, fading in below the type's feet
+    ctx.save(); ctx.beginPath(); ctx.rect(-50, BASE, W + 100, H); ctx.clip(); ctx.globalAlpha = 0.11 * lit; ctx.fillStyle = PAL.line;
     for (const [x1, y1, x2, y2, w] of TN.courtLines()) TN.fillPoly3(ctx, FLOOR_CAM, TN.lineQuad(x1, y1, x2, y2, w));
-    ctx.globalAlpha = 1; const fade = ctx.createLinearGradient(0, HORIZON - 10, 0, HORIZON + 50); fade.addColorStop(0, rgba(PAL.bg, 1)); fade.addColorStop(1, rgba(PAL.bg, 0));
-    ctx.fillStyle = fade; ctx.fillRect(-50, HORIZON - 10, W + 100, 60);
+    ctx.globalAlpha = 1; const fade = ctx.createLinearGradient(0, BASE, 0, HORIZON + 40); fade.addColorStop(0, rgba(PAL.bg, 1)); fade.addColorStop(0.5, rgba(PAL.bg, 0.6)); fade.addColorStop(1, rgba(PAL.bg, 0));
+    ctx.fillStyle = fade; ctx.fillRect(-50, BASE, W + 100, HORIZON + 40 - BASE); ctx.restore();
+    // a broad wash so the four pools read as one lit plane, then the specular pools where each cone meets the floor (the brightest thing on the floor)
+    ctx.save(); ctx.translate(W / 2, 800); ctx.scale(1, 0.22); TN.glowDot(ctx, 0, 0, 1000, PAL.court, 0.16 * lit); ctx.restore();
+    for (let i = 0; i < 4; i++) { const b = rig[i] * floorOn; if (b <= 0) continue; const c = CONES[i]; const tt = (790 - c.y) / Math.sin(c.ang); const px = c.x + Math.cos(c.ang) * tt;
+      ctx.save(); ctx.translate(px, 790); ctx.scale(1, 0.2); TN.glowDot(ctx, 0, 0, 400, PAL.court, 0.5 * b); TN.glowDot(ctx, 0, 0, 210, PAL.courtSheen, 0.34 * b); TN.glowDot(ctx, 0, 0, 90, PAL.ice, 0.12 * b); ctx.restore(); }
     ctx.restore();
   }
 
@@ -165,16 +173,27 @@
     const g = ctx.createRadialGradient(0, 0, 0, 0, 0, 75); g.addColorStop(0, rgba(PAL.ink, 0.5 * k)); g.addColorStop(0.5, rgba(PAL.ink, 0.28 * k)); g.addColorStop(1, rgba(PAL.ink, 0));
     ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(0, 0, 75, 7, 0, 0, TAU); ctx.fill(); ctx.restore();
   }
-  function drawWords(g, f, fi, dim) { for (let i = 0; i < 3; i++) { const st = wordState(f, fi, SLAMS[i]); if (st) drawWord(g, L.words[i], st.scale, st.alpha, dim); } }
-  function drawHeroBall(g, f, fi, by, sq) { TN.drawBall(g, L.ball.x, by, BALL_R, { colors: TN.BALL_COLORS, light: [-0.12, -1], rim: fi >= 594 ? 0 : 0.5, fuzz: 1, rot: [ballSpin(f), 0.3, 0.15], squash: sq, squashAngle: 0 }); }
-  function drawReflection(ctx, hero, reflK) {           // glossy floor: the hero layer flipped about the baseline, blurred at 1/3 res, 200 px fade
+  function drawWords(g, f, fi, dim) { for (let i = 0; i < 3; i++) { const st = wordState(f, fi, SLAMS[i]); if (st) drawWord(g, L.words[i], st.scale, st.alpha, dim, st.flash); } }
+  function drawHeroBall(g, f, fi, by, sq) {
+    // f450–f455: the iris ball (S4's flat felt disc with a 2 px Flare Ice rim) becomes the key-lit felt ball — the shading and the rim cross over so there is no pop at the cut
+    const k = E.outCubic(prog(f, 450, 455.5));
+    TN.drawBall(g, L.ball.x, by, BALL_R, { colors: TN.BALL_COLORS, light: [-0.12, -1], rim: fi >= 594 ? 0 : lerp(0.25, 0.5, k), fuzz: lerp(0.35, 1, k), rot: [ballSpin(f), 0.3, 0.15], squash: sq, squashAngle: 0 });
+    if (k < 1) {
+      g.save(); g.translate(L.ball.x, by); g.scale(1 + sq, 1 - sq);
+      g.globalAlpha = 0.5 * (1 - k); g.fillStyle = PAL.ball; g.beginPath(); g.arc(0, 0, BALL_R - 0.5, 0, TAU); g.fill();                 // flatten the shading toward S4's disc
+      g.globalAlpha = 1 - k; g.strokeStyle = PAL.ice; g.lineWidth = 2; g.beginPath(); g.arc(0, 0, BALL_R - 1, 0, TAU); g.stroke();      // S4's Flare Ice rim fading out
+      g.restore();
+    }
+  }
+  function drawReflection(ctx, hero, reflK, sublineOn) {   // glossy floor: the hero layer flipped about the baseline, blurred at 1/3 res, 200 px fade, knocked back under the sub-line
     if (reflK <= 0) return;
     const sc = 1 / 3, bw = Math.round(W * sc), bh = Math.round(H * sc);
     const r = TN.scratch('s5_refl', bw, bh); const g = r.getContext('2d');
-    g.save(); g.filter = 'blur(3px)'; g.translate(0, 2 * BASE * sc); g.scale(sc, -sc); g.drawImage(hero, 0, 0); g.restore();
+    g.save(); g.filter = 'blur(2px)'; g.translate(0, 2 * BASE * sc); g.scale(sc, -sc); g.drawImage(hero, 0, 0); g.restore();
     g.globalCompositeOperation = 'destination-in'; const fade = g.createLinearGradient(0, BASE * sc, 0, (BASE + 200) * sc); fade.addColorStop(0, 'rgba(0,0,0,1)'); fade.addColorStop(1, 'rgba(0,0,0,0)');
     g.fillStyle = fade; g.fillRect(0, 0, bw, bh);
-    ctx.save(); ctx.globalAlpha = 0.22 * reflK; ctx.globalCompositeOperation = 'screen'; ctx.beginPath(); ctx.rect(0, BASE, W, 220); ctx.clip(); ctx.drawImage(r, 0, 0, bw, bh, 0, 0, W, H); ctx.restore();
+    if (sublineOn > 0) { g.globalCompositeOperation = 'destination-out'; g.save(); g.translate(W / 2 * sc, 714 * sc); g.scale(1, 0.1); const k = g.createRadialGradient(0, 0, 0, 0, 0, 420 * sc); k.addColorStop(0, `rgba(0,0,0,${0.85 * sublineOn})`); k.addColorStop(0.7, `rgba(0,0,0,${0.6 * sublineOn})`); k.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = k; g.beginPath(); g.arc(0, 0, 420 * sc, 0, TAU); g.fill(); g.restore(); }
+    ctx.save(); ctx.globalAlpha = 0.25 * reflK; ctx.globalCompositeOperation = 'screen'; ctx.beginPath(); ctx.rect(0, BASE, W, 220); ctx.clip(); ctx.drawImage(r, 0, 0, bw, bh, 0, 0, W, H); ctx.restore();
   }
   function specularSweep(ctx, f, words) {              // f522–f556: diagonal Flare Ice band, source-in on the glyphs, screened onto the frame
     if (f < 521.5 || f > 557) return;
@@ -202,7 +221,6 @@
     ctx.strokeStyle = rgba(PAL.white, 0.9 * k); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(L.ball.x, by, BALL_R - 1, side < 0 ? Math.PI * 0.75 : -Math.PI * 0.45, side < 0 ? Math.PI * 1.55 : Math.PI * 0.35); ctx.stroke();
     ctx.restore();
   }
-  const ballY = f => BASE - BALL_R - ballH(f);
 
   TN.scenes.scene5 = {
     render(ctx, t, gt) {
@@ -210,11 +228,12 @@
       // f599: pure black, flag honoured by postAt (grain/vignette/aberration off)
       if (fi >= 599) { TN.S5.black = true; ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); return; }
       const rig = [0, 1, 2, 3].map(i => rigLevel(fi, gt, i));
-      const dim = fi < 591 ? 0 : fi < 594 ? 0.5 * ((fi - 590) / 3) : 1;                   // type fill → Ink across the shutdown
+      const dim = fi < 591 ? 0 : fi < 594 ? 0.5 * ((fi - 590) / 3) : 1;                   // type fill → 50 % Ink over f591–f593, Ink from f594
       const reflK = fi < 591 ? 1 : fi < 594 ? 0.5 : 0, floorOn = fi < 594 ? 1 : 0;
       const showBall = f >= 450 - 1e-6;                                                   // before f450 the transition shows scene4's ball
       const h = ballH(f), by = BASE - BALL_R - h, sq = showBall ? ballSquash(f) : 0;
       const sh = slamShake(fi); const dx = Math.sin(TAU * 0.2 * gt), dy = 0.7 * Math.cos(TAU * 0.14 * gt);   // 1 px drift at 0.2 Hz
+      const sublineOn = fi >= 534 && fi < 597 ? E.outCubic(prog(f, 536, 546)) : 0;
       ctx.save();
       ctx.fillStyle = PAL.bg; ctx.fillRect(0, 0, W, H);
       ctx.translate(W / 2 + dx + sh.x, H / 2 + dy + sh.y); ctx.rotate(sh.r); ctx.translate(-W / 2, -H / 2);
@@ -222,17 +241,17 @@
       // --- environment ---
       drawBeams(ctx, rig); drawRigs(ctx, rig); drawFloor(ctx, rig, floorOn); drawMotes(ctx, gt, rig);
       // --- hero layer (words + ball) ---
-      const anyWord = fi >= SLAMS[0] - 5; const heroOn = anyWord || showBall;
+      const anyWord = fi >= SLAMS[0]; const heroOn = anyWord || showBall;
       if (heroOn) {
         const words = TN.scratch('s5_words'); const gw = words.getContext('2d'); if (anyWord) drawWords(gw, f, fi, dim);
         const hero = TN.scratch('s5_hero'); const gh = hero.getContext('2d'); if (anyWord) gh.drawImage(words, 0, 0); if (showBall) drawHeroBall(gh, f, fi, by, sq);
-        drawReflection(ctx, hero, reflK);
-        if (showBall && fi < 597) drawBallPad(ctx, L.ball.x, h);
+        drawReflection(ctx, hero, reflK, sublineOn);
+        if (showBall && fi < 594) drawBallPad(ctx, L.ball.x, h);                                     // the contact shadow needs a light: gone with the rigs
         // floor shock ellipses: ball contacts (full) and word stamps (floor side only)
         for (const [fc, , n] of CONTACTS) if (n > 0) floorRing(ctx, L.ball.x, BASE, f, fc, fc === 456 ? 130 : fc === 516 ? 110 : 80, fc > 472);
         for (let i = 0; i < 3; i++) { const w = L.words[i]; floorRing(ctx, w.x + w.w / 2, BASE, f, SLAMS[i], w.w * 0.75, true); }
         ctx.drawImage(hero, 0, 0);
-        if (fi >= 594 && fi < 597 && showBall) { ctx.save(); ctx.fillStyle = rgba(PAL.bg, 0.55); ctx.beginPath(); ctx.arc(L.ball.x, by, BALL_R * 1.12, 0, TAU); ctx.fill(); ctx.restore(); }   // rigs out: the ball loses its key until it lights itself
+        if (fi >= 594 && fi < 597 && showBall) { ctx.save(); ctx.fillStyle = rgba(PAL.bg, 0.6); ctx.beginPath(); ctx.arc(L.ball.x, by, BALL_R * 1.12, 0, TAU); ctx.fill(); ctx.restore(); }   // rigs out: the ball loses its key until it lights itself
         if (anyWord) specularSweep(ctx, f, words);
         // dust: ball contacts (Line White specks) and the 40-particle puffs at each word's foot
         for (const [fc, , n] of CONTACTS) if (n > 0) puff(ctx, gt, { x0: L.ball.x - 8, x1: L.ball.x + 8, y: BASE, t0: F(fc), count: n, seed: fc, speed: [80, 260], spread: 1.1, life: [0.22, 0.45], size: [1, 2], colors: [PAL.line] });
@@ -241,7 +260,7 @@
       // --- sub-line: rule f534–f542, tagline f536–f546, hard-cut f597 ---
       if (fi >= 534 && fi < 597) {
         const pr = E.outCubic(prog(f, 534, 542)); ctx.save(); ctx.fillStyle = PAL.ball; ctx.fillRect(W / 2 - 210 * pr, 679, 420 * pr, 2); ctx.restore();
-        const pt = E.outCubic(prog(f, 536, 546)); if (pt > 0) TN.text(ctx, 'EVERY MILLIMETRE COUNTS', W / 2, 722 + 10 * (1 - pt), { size: 24, family: FONTS.mono, weight: 400, color: PAL.mute, spacing: 7.2, align: 'center', alpha: pt });
+        if (sublineOn > 0) TN.text(ctx, 'EVERY MILLIMETRE COUNTS', W / 2, 722 + 10 * (1 - sublineOn), { size: 24, family: FONTS.mono, weight: 400, color: PAL.mute, spacing: 7.2, align: 'center', alpha: sublineOn });
       }
       // --- T5 f597–f598: the ball's own self-glow is the last light ---
       if (fi >= 597 && showBall) TN.glowDot(ctx, L.ball.x, by, 90, PAL.ball, fi === 597 ? 0.6 : 0.2);
