@@ -11,7 +11,7 @@ if [[ -n "$AUDIO" && -f "$AUDIO" ]]; then
 else
   ffmpeg -y -hide_banner -loglevel error "${VARGS[@]}" -c:v libx264 -preset slow -crf 15 -pix_fmt yuv420p -profile:v high -level 4.2 -color_primaries bt709 -color_trc bt709 -colorspace bt709 -movflags +faststart "$BASE.mp4"
 fi
-# poster frame + 480p gif preview (30 fps)
-ffmpeg -y -hide_banner -loglevel error -i "$BASE.mp4" -vf "select=eq(n\,330)" -frames:v 1 "$BASE-poster.jpg"
-ffmpeg -y -hide_banner -loglevel error -i "$BASE.mp4" -vf "fps=30,scale=854:-1:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=192:stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=4:diff_mode=rectangle" "$BASE-preview.gif"
+# poster frame (f372 = the IN. verdict) + 640px gif preview (20 fps)
+ffmpeg -y -hide_banner -loglevel error -i "$BASE.mp4" -vf "select=eq(n\,378)" -frames:v 1 "$BASE-poster.jpg"
+ffmpeg -y -hide_banner -loglevel error -i "$BASE.mp4" -vf "fps=20,scale=640:-1:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=128:stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle" "$BASE-preview.gif"
 ffprobe -v error -show_entries format=duration,size:stream=codec_name,width,height,r_frame_rate -of default=nw=1 "$BASE.mp4"
