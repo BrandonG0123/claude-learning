@@ -2,7 +2,9 @@
 
 A fully procedural, frame-accurate 10 s / 60 fps / 1080p tennis title sequence. No footage, no stock, no
 3D package: every frame is drawn by HTML5 Canvas 2D code, captured by headless Chromium, encoded by ffmpeg,
-and scored with a synthesized sound design. The result is `out/tennis.mp4` (with a GIF preview and poster frame).
+and scored with a synthesized sound design. The result is [`out/tennis.mp4`](out/tennis.mp4) (1080p60, H.264 + AAC, 10.0 s), with [`out/tennis-preview.gif`](out/tennis-preview.gif) and a poster frame.
+
+![poster](out/tennis-poster.jpg)
 
 **Story (one serve on match point, broadcast-style):** floodlights ignite over an empty night-session court →
 the ball hangs at the top of the toss → the racket detonates it (the strike *is* the cut) → we ride the
