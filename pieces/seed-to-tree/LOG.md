@@ -43,3 +43,8 @@ Per-shot PASS table (contact sheets and `review/phone.jpg` against grammar/FRAME
 - Weakest shot: 1 (seed). Five seconds on one framing; the wake at 4.0 is only a mood change. A visible stir (the acorn rocks once, the kernel brightens) would land it better.
 - Not verified: I cannot listen to the score; the balance is proven by the numbers above only. Listen to the slam at 14.0 and the stab/chord balance.
 - Proposed craft line (for craft.md → Code or the README's install notes): "Linux containers often have no handwriting font; `fc-match 'Comic Neue'` before rendering, and install it (the kit's HAND stack lists it) or the tags set in a sans."
+
+## After run 2
+
+- The skill is now vendored at `.claude/skills/animate/` (so `SKILL=.claude/skills/animate` for the commands above) and
+  `.claude/hooks/session-start.sh` installs the Comic Neue font in cloud sessions. `/animate` works without the plugin.
