@@ -1,0 +1,13 @@
+# animate pieces: build products and heavy renders stay out of git
+pieces/*/index.html
+pieces/*/frames/
+pieces/*/renders/*.wav
+pieces/*/renders/final*.mp4
+pieces/*/review/*-sheet.jpg
+pieces/*/tile*.png
+references/
+# the vendored animate skill: build products of its demos and gallery
+.claude/skills/animate/**/index.html
+.claude/skills/animate/**/frames/
+.claude/skills/animate/**/renders/
+.claude/skills/animate/**/review/

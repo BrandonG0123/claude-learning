@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Seed to tree</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #1b1714; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { height: min(100vh, calc(100vw * 16 / 9)); width: auto; aspect-ratio: 9 / 16; display: block; cursor: pointer; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+"use strict";
+// =====================================================================
+//  SEED TO TREE — 9:16, 20.0s = 10 bars @ 120 BPM, 24fps. Cut paper.
+//  One true thing: growth is slow and then sudden. Four beats: seed, sprout, sapling, tree.
+//  Format F2 (a chronology joined by shape morphs): the acorn becomes the split shell (5.0), the seed-leaf becomes
+//  the sapling's crown (9.5); the one hard cut is the tree at 14.0, the loudest hit, after a second of silence.
+//  The hero is the spark, the life asleep in the acorn: 5 rays asleep, 6 at the sprout, 8 in the sapling, 12 as the
+//  crown's heart. At year 40 the tree drops its first acorn and the loop closes on the seed. Orange = the spark only.
+// =====================================================================
+const FPS = 24, W = 1080, H = 1920;
+const BPM = 120, BEAT = 60 / BPM, E8 = BEAT / 2, E16 = BEAT / 4;   // 0.5 / 0.25 / 0.125s = 12 / 6 / 3 frames
+const DURATION = 20.0;
+const NFRAMES = Math.round(DURATION * FPS);                   // 480
+const LOOP_T = NFRAMES / FPS;
+const SAFE = { top: 240, bottom: 420, right: 140 };          // 9:16 platform UI; keep content in x 60–940, y 250–1500
+const HAND = '"Ink Free", "Segoe Print", "Bradley Hand", "Chalkboard SE", "Comic Sans MS", "Comic Neue", cursive';   // local handwriting fonts: Windows, macOS, Linux
+const CX = 470;                                               // caption centre (left of the right-hand UI strip)
+
+const M1 = 5.0, M2 = 9.5, CUT = 14.0;                        // the two morph centres and the one hard cut (all on the 8th grid)
+// eras: [t0, t1, scene]. Boundaries with a BRIDGE (src/bridges.js) morph; the rest are hard cuts.
+const ERA_LIST = [[0, M1, () => sceneSeed()], [M1, M2, () => sceneSprout()], [M2, CUT, () => sceneSapling()], [CUT, DURATION, () => sceneTree()]];
+const SHOTS = [
+  //  key       era  t0    t1    title
+  ['seed',      0,   0.0,  5.0,  'day 1: the acorn asleep in the soil; a root pokes out; the spark stirs'],
+  ['sprout',    1,   5.0,  9.5,  'week 6: the shell splits, the spark peeks out, the sun comes out'],
+  ['years',     2,   9.5,  13.0, 'year 1 to 5: the sapling steps up a year per tick'],
+  ['hush',      2,   13.0, 14.0, 'the sapling holds; silence'],
+  ['tree',      3,   14.0, 18.0, 'year 40: the tree (the one hard cut, the loudest hit); the title'],
+  ['acorn',     3,   18.0, 20.0, 'the first acorn falls and lands; loops to the seed'],
+];
+const TIMELINE = {
+  width: W, height: H, fps: FPS, bpm: BPM, duration: DURATION, frames: NFRAMES, loop: LOOP_T, safe: SAFE,
+  format: 'morph-chain',
+  shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
+  cuts: [CUT],           // hard cuts (seconds, on the 8th grid)
+  morphs: [M1, M2],      // morph bridge centres (seconds, on the 8th grid)
+  cues: { root: 3.0, wake: 4.0, peek: 5.75, leaves: 6.0, sun: 6.5, bird: 7.0, years: [9.5, 10.5, 11.25, 11.75, 12.25], hush: 13.0, slam: 14.0, title: 17.0, drop: 18.0, land: 19.75 },
+  acts: [
+    { name: '1 Seed',    role: 'build',   t0: 0.0,  t1: 5.0 },
+    { name: '2 Sprout',  role: 'journey', t0: 5.0,  t1: 9.5 },
+    { name: '3 Years',   role: 'peak',    t0: 9.5,  t1: 13.0 },
+    { name: '4 Hush',    role: 'silence', t0: 13.0, t1: 14.0 },
+    { name: '5 Tree',    role: 'gift',    t0: 14.0, t1: 18.0 },
+    { name: '6 Acorn',   role: 'goodbye', t0: 18.0, t1: 20.0 },
+  ],
+  // the storyboard: one key frame per beat
+  board: [
+    { t: 3.6,  title: 'day 1: the acorn waits',   sound: 'a low drone; rain plinks; one low note as the root grows', next: 'the acorn becomes the split shell' },
+    { t: 7.6,  title: 'week 6: a sprout',          sound: 'a soft pad; the spark\'s rising fifth; a bird',            next: 'the seed-leaf becomes the sapling\'s crown' },
+    { t: 12.6, title: 'year 5: a sapling',         sound: 'a groove that ticks the years, faster; a riser; silence', next: 'the one hard cut' },
+    { t: 17.9, title: 'year 40: a tree',           sound: 'the loudest hit, then a flat warm chord; chimes',          next: 'the first acorn falls; loops to the seed' },
+  ],
+  narration: [],
+};
+window.TIMELINE = TIMELINE;
