@@ -72,7 +72,7 @@
     return { scale, alpha: ki === 0 ? 0.55 : 1, flash: ki === 5 ? 0.3 : ki === 6 ? 0.15 : 0 };   // 2-frame Flare Ice catch-light as the stamp lands
   }
   function drawWord(g, w, scale, alpha, dim, flash = 0) {
-    const cx = w.x + w.w / 2, cy = BASE - L.cap / 2;
+    const cx = w.x, cy = BASE - L.cap / 2; // pivot on the leading edge: words arrive left-to-right without overprinting the previous word
     g.save(); g.globalAlpha = alpha; g.translate(cx, cy); g.scale(scale, scale); g.translate(-cx, -cy);
     const o = { size: L.size, family: TYPE.family, weight: TYPE.weight, spacing: L.sp, align: 'left' };
     if (dim < 1) TN.text(g, w.s, w.x, BASE - 1, Object.assign({ color: lerpColor(PAL.ice, PAL.ink, dim) }, o));         // 1 px Flare Ice top edge (offset pass)

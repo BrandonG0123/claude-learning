@@ -320,7 +320,6 @@
       TN.wipeText(ctx, 'LINE REVIEW · FIRST SERVE · SERVICE LINE', 96, 126, prog(f, 312, 318), Object.assign({}, mono, { color: PAL.mute, align: 'left' }));
       const zs = f < 354 ? S.s : f < 370 ? S_DIVE : f < 375 ? S.s : S_HOLD; const z = (zs / S.s0).toFixed(1).padStart(4, '0');
       TN.text(ctx, 'ZOOM ×' + z, 1824, 1000, Object.assign({}, mono, { color: PAL.accent2, align: 'right', alpha: prog(f, 312, 316) }));
-      TN.text(ctx, 'ORTHO · 1 PX = ' + (1000 / zs).toFixed(zs > 1000 ? 2 : 1) + ' MM', 1824, 1028, Object.assign({}, mono, { color: PAL.mute, align: 'right', alpha: 0.8 * prog(f, 314, 318) }));
       drawTag(ctx, gt);
     }
     // data strip

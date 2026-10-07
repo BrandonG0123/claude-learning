@@ -43,7 +43,7 @@
     // lamp grid 5×3 (0.5 m pitch) popping row by row
     for (let r = 0; r < 3; r++) for (let c = 0; c < 5; c++) {
       const rowOn = clamp((age - r * 1.2) / 2); if (rowOn <= 0) continue;
-      const lp = cam.project([rig.p[0] + (c - 2) * 0.55, rig.p[1], rig.p[2] - (r - 1) * 0.45]);
+      const lp = cam.project([rig.p[0] + (c - 2) * 0.3, rig.p[1], rig.p[2] - (r - 1) * 0.26]);
       TN.glowDot(ctx, lp.x, lp.y, 7 * over, '#FFFFFF', 0.9 * rowOn, 0.2); TN.glowDot(ctx, lp.x, lp.y, 22 * over, PAL.ice, 0.35 * rowOn);
     }
     TN.glowDot(ctx, s.x, s.y, 170 * over * on, PAL.ice, 0.55 * on); TN.glowDot(ctx, s.x, s.y, 520 * on, PAL.ice, 0.12 * on);
@@ -115,7 +115,7 @@
       const rule = E.outCubic(prog(f, 36, 46)); if (rule > 0) { ctx.save(); ctx.fillStyle = PAL.ball; ctx.fillRect(96, 95, 220 * rule, 2); ctx.restore(); }
       if (f >= 40) { const n = clamp(Math.floor(f - 40) + 1, 0, 13); TN.text(ctx, 'NIGHT SESSION'.slice(0, n), 96, 134, { size: 24, family: TN.FONTS.mono, weight: 700, color: PAL.line, align: 'left', spacing: 6 }); }
       if (f >= 52) TN.text(ctx, 'CENTRE COURT · 21:04', 96, 166, { size: 22, family: TN.FONTS.mono, weight: 400, color: PAL.mute, align: 'left', spacing: 2, alpha: E.outCubic(prog(f, 52, 62)) });
-      if (f >= 40 && (gt % 1) < 0.5) { ctx.save(); ctx.fillStyle = PAL.accent; ctx.shadowColor = PAL.accent; ctx.shadowBlur = 8; ctx.beginPath(); ctx.arc(80, 126, 3, 0, TAU); ctx.fill(); ctx.restore(); }
+      if (f >= 40 && (((gt - 40 / 60) % 1) < 0.5)) { ctx.save(); ctx.fillStyle = PAL.accent; ctx.shadowColor = PAL.accent; ctx.shadowBlur = 8; ctx.beginPath(); ctx.arc(80, 126, 3, 0, TAU); ctx.fill(); ctx.restore(); }
       // --- R5 fires into the lens f75+ (bleaching toward Flare Ice before the white) ---
       if (f >= R5.f) { const s5 = cam.project(R5.p); const inten = lerp(0.6, 6, E.outCubic(prog(f, 75, 84))); TN.lensFlare(ctx, s5.x + dx, s5.y + dy, inten, PAL.ice, { streak: false, ghosts: true }); for (let k = 0; k < 6; k++) TN.lightStreak(ctx, s5.x + dx, s5.y + dy, k * Math.PI / 6, 2200 * clamp(inten / 3), 14 + 10 * clamp(inten / 3), PAL.ice, 0.5 * clamp(inten / 2), 0.4); }
     },
