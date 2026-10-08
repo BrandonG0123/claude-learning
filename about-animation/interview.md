@@ -113,6 +113,22 @@ Category map (confirmed in round 4):
   opens on a few seconds of his real clip. Every frame gets the privacy check.
 - **Length:** about 12 s before it settles into the page.
 
+## 8 Oct 2026: round 6 answers
+
+- **Remotion (his question):** use it for the video parts (the ~3 s opening,
+  and grading his clips into matching loops for the pieces), not for the live
+  constellation. Free for individuals; record the licence.
+- **Effects:** the mix (a few real sounds he records for key moments,
+  synthesised for scans and transitions) "and also grab free licensed
+  sounds". → CC0 only where possible, each one's source and licence recorded
+  in a licence file.
+- **Music:** his piano: a few bars he plays and records, low under the
+  voiceover.
+- **Phones:** the same piece reframed vertical; the constellation stacks; no
+  extra text.
+- **Interaction:** plays by itself; any key, click or scroll skips to the
+  end; once settled, everything responds to the pointer.
+
 ## Open questions
 
 - Per item: specifics, how long, what he loves about it, what media exists.
