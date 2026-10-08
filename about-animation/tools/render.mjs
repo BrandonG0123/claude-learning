@@ -72,13 +72,21 @@ for (const n of names) {
   let fail;
   const failed = new Promise((_, rej) => { fail = rej; });
   page.on('pageerror', (e) => fail(new Error(`${n}: ${e.message}`)));
-  await page.goto(`http://localhost:${port}/${n}.html${phone ? '?phone' : ''}`);
+  await page.goto(`http://localhost:${port}/${n}.html${phone ? '?phone' : ''}`, { waitUntil: 'commit', timeout: 600_000 });
   await Promise.race([failed, page.waitForFunction(() => window.__done === true, null, { timeout: Number(process.env.TIMEOUT ?? 600) * 1000 })]);
   await page.evaluate(() => document.fonts.ready);
-  const png = await page.screenshot({ type: 'png', timeout: 300_000 });
-  const file = path.join(OUT, `${n}${phone ? '-phone' : ''}.png`);
-  await sharp(png).resize(view.width, view.height, { kernel: 'lanczos3' }).png().toFile(file);
-  console.log(`${n}: ${((Date.now() - t0) / 1000).toFixed(1)} s → ${path.relative(ROOT, file)}`);
+  // A sketch that exposes window.__seek(t) is rendered at each of TIMES
+  // (comma-separated score seconds) into frames/<name>-<t>.png.
+  const times = process.env.TIMES && (await page.evaluate(() => typeof window.__seek === 'function'))
+    ? process.env.TIMES.split(',').map(Number) : [null];
+  for (const t of times) {
+    if (t !== null) await page.evaluate((tt) => window.__seek(tt), t);
+    const png = await page.screenshot({ type: 'png', timeout: 300_000 });
+    const tag = t === null ? '' : `-${t.toFixed(2)}`;
+    const file = path.join(OUT, `${n}${phone ? '-phone' : ''}${tag}.png`);
+    await sharp(png).resize(view.width, view.height, { kernel: 'lanczos3' }).png().toFile(file);
+    console.log(`${n}${tag}: ${((Date.now() - t0) / 1000).toFixed(1)} s → ${path.relative(ROOT, file)}`);
+  }
   await page.close();
 }
 await browser.close();
