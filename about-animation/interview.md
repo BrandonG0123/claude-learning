@@ -85,7 +85,7 @@ TO CONFIRM whether they stay among the dozen.
   into its items in the animation. Chess is an item under Hobbies.
 - **Skiing, surfing, hiking, biking:** four separate pieces (under Hobbies).
 
-Draft category map (to confirm, round 4):
+Category map (confirmed in round 4):
 - Centre: self-improvement (his values)
 - Tennis: private coach, tournaments, high school team, playing in college
 - School: course rigor, GPA (page later), the AI/ML independent study
@@ -93,6 +93,13 @@ Draft category map (to confirm, round 4):
 - Coding: web (HTML, CSS, JavaScript), C++, Python
 - Hobbies: skiing, surfing, hiking, biking, boxing, piano, chess, swimming
 - Mind: psychology, deep conversations, time spent thinking
+
+## 8 Oct 2026: round 4 answers
+
+- **Map:** confirmed as drafted above.
+- **Breakdown:** the intro shows one category (Tennis) breaking down into its
+  items; the others break down when hovered or tapped. Keeps it near 10 s.
+- **Centre label:** "Self-improvement".
 
 ## Open questions
 
