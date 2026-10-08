@@ -198,3 +198,19 @@ I traced them instead.
 - **Replay** restarts the film from frame 0, brings the credit back, and turns
   the sound on unless the reader muted it before (a mute is remembered).
 - Found nothing to change.
+
+## Round 12: final checks
+
+- Full suite on the final build: `astro check` 0 errors; axe 0 violations
+  across 42 page checks (the home hero button flakes on some runs, on `main`
+  too); 44 links resolve; budgets pass (About's critical JS 7.8 KB, the scene
+  chunk 644 KB raw / 167 KB gzip, About's CSS 40 KB).
+- Lighthouse, desktop preset, 3 runs a page, collected locally (not uploaded):
+  /about 100 / 100 / 100, LCP 0.43 s, CLS 0, TBT 0. The home page (0.84, CLS
+  0.31) and the foot scanner (0.92, TBT ~210 ms) miss the 95 bar; built from
+  `main` in a separate worktree they score the same, so they're not from this
+  branch. Written up in NEXT.md.
+- The phone recorded again with its finished tall cut, 30 fps with sound: the
+  credit at the top during the film, the hand-off, the ring, the ripple, the
+  open list above the buttons, the title. Nothing new to fix.
+- The morning review page: https://claude.ai/artifact/WxboJLjbuBw2d6bsjH7TBc
