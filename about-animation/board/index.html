@@ -1,0 +1,131 @@
+<title>About Intro Directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;700&family=IBM+Plex+Mono:wght@400&family=Unbounded:wght@500;700;800&display=swap">
+<style>
+  /* A viewing room for dark frames: the site's own screen palette and type, one column of frames, notes beside each. */
+  :root {
+    --void: #05060A; --surface: #0B0F17; --hairline: #1A2130; --rule: #5B677B;
+    --frost: #EEF2F7; --mist: #8A94A6; --ice: #4DF3FF; --ball: #D4FF3A; --signal: #FF5A4E;
+    --display: 'Unbounded', 'Arial Black', system-ui, sans-serif;
+    --body: 'Atkinson Hyperlegible Next', system-ui, -apple-system, sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--void); color: var(--frost); font-family: var(--body); font-size: 17px; line-height: 1.6; }
+  .wrap { max-width: 76rem; margin-inline: auto; padding-inline: clamp(16px, 4vw, 48px); padding-block: 40px 96px; }
+  .mono { font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mist); }
+  h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; letter-spacing: -0.02em; }
+  h1 { font-size: clamp(30px, 5vw, 56px); font-weight: 800; line-height: 1.05; }
+  h2 { font-size: clamp(22px, 3vw, 30px); font-weight: 700; line-height: 1.15; }
+  h3 { font-size: 15px; font-weight: 700; letter-spacing: 0; }
+  p { margin: 0; max-width: 40rem; }
+  a { color: var(--ice); }
+  header { display: grid; gap: 16px; padding-bottom: 32px; border-bottom: 1px solid var(--hairline); }
+  header p { color: var(--mist); }
+  header p strong { color: var(--frost); font-weight: 700; }
+
+  section { display: grid; gap: 20px; padding-block: 48px; border-bottom: 1px solid var(--hairline); }
+  .head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; }
+  .tag { font-family: var(--display); font-weight: 800; font-size: 15px; width: 2.1em; height: 2.1em; display: inline-grid; place-items: center; border: 1px solid var(--rule); flex: none; }
+  .rec .tag { border-color: var(--ball); color: var(--ball); }
+  figure { margin: 0; }
+  figure img { display: block; width: 100%; height: auto; border: 1px solid var(--hairline); background: var(--surface); }
+  figcaption { margin-top: 8px; }
+  .idea { font-size: 19px; max-width: 46rem; }
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: 24px 32px; }
+  .cols > div { display: grid; gap: 6px; align-content: start; min-width: 0; }
+  .cols ul { margin: 0; padding-left: 1.1em; display: grid; gap: 4px; }
+  .cols li::marker { color: var(--rule); }
+  .flag { border-left: 2px solid var(--signal); padding: 2px 0 2px 14px; color: var(--frost); }
+  .flag .mono { color: var(--signal); display: block; margin-bottom: 2px; }
+
+  .rec { border: 1px solid color-mix(in srgb, var(--ball) 45%, transparent); padding: clamp(18px, 3vw, 32px); margin-top: 48px; display: grid; gap: 20px; background: color-mix(in srgb, var(--ball) 3%, var(--void)); }
+  .rec .mono { color: var(--ball); }
+  .arc { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .arc figure { display: grid; gap: 6px; }
+  .arc .mono { font-size: 11px; }
+  @media (max-width: 40rem) { .arc { grid-template-columns: 1fr; } }
+
+  .how { color: var(--mist); display: grid; gap: 10px; padding-top: 40px; }
+  .how p { max-width: 52rem; }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="mono">brandongreene.dev · About opening · Interview round 1 of 6 · Feel</span>
+    <h1>Four ways the About page could open</h1>
+    <p>Each frame is one moment from a direction, rendered from real 3D scenes and the site's own fonts. The motion is described here and gets shown as five-second sketches once you've narrowed it down. <strong>Look at them, then answer the questions in the chat.</strong></p>
+  </header>
+
+  <section aria-labelledby="now">
+    <div class="head"><span class="tag" aria-hidden="true">0</span><h2 id="now">What runs now: Ignition</h2></div>
+    <figure>
+      <img src="img/baseline.webp" width="1600" height="220" alt="Four moments of the current intro: the felt ball, the ball burning, the chess knight in ice-blue points, and the five pieces with labels.">
+      <figcaption class="mono">Ball · burn · knight in points · the five pieces. Rendered from the live code.</figcaption>
+    </figure>
+    <p>The baseline to beat. What it does well: one object carries the whole story, the colour change from optic yellow to ice says "real thing becomes data", and it ends as links. Where it falls short: the camera never moves, every shape is the same blue cloud at the same size in the middle, the fire reads as a glowing blob, and the five pieces sit above a page that is a separate plain column.</p>
+  </section>
+
+  <section aria-labelledby="a">
+    <div class="head"><span class="tag" aria-hidden="true">A</span><h2 id="a">Ad cut</h2><span class="mono">Cinematic · photoreal</span></div>
+    <figure><img src="img/a-ad.webp" width="1600" height="900" alt="A close-up of a fuzzy optic-yellow tennis ball in flight, its trailing side burning, flames and sparks streaming back to the right, a huge faint word TENNIS behind it."></figure>
+    <p class="idea">Shot like a sportswear spot. The ball is in flight after your serve; it catches, burns and throws sparks, on a long lens against black, with a cold rim light against the warm fire.</p>
+    <div class="cols">
+      <div><h3>In motion</h3><p>Hard cuts between angles: a macro of the felt, the ball crossing frame, a slow-motion beat at the ignition. The word sits huge behind the action. Sound carries the cuts.</p></div>
+      <div><h3>Strengths</h3><ul><li>The biggest "wow" in the first three seconds</li><li>Exactly the "realistic, professional ad" you asked for</li><li>Your real serve footage could cut straight in</li></ul></div>
+      <div><h3>Risks</h3><ul><li>Easiest to tip into overstimulating; it needs the one-thing-at-a-time rule more than any other</li><li>Photoreal fire like this is heavy to run live, so it leans toward video</li><li>On its own it's about tennis, not about you building things</li></ul></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="b">
+    <div class="head"><span class="tag" aria-hidden="true">B</span><h2 id="b">Real to scan</h2><span class="mono">Today's idea, shot properly</span></div>
+    <figure><img src="img/b-scan.webp" width="1600" height="900" alt="A scanning line crosses a realistic tennis ball; above it the felt is real, below it the ball is ice-blue points that stream left and build a chess knight."></figure>
+    <p class="idea">A scanning sheet climbs the real ball. Above the line it's felt; below it, it's points, which peel away and stream across to build the next thing. Every transition is a scan.</p>
+    <div class="cols">
+      <div><h3>In motion</h3><p>The line sweeps, the points lift off in a wave and arc across, the camera drifts with the stream. Each new shape is built by the points of the last one, so nothing ever stops dead.</p></div>
+      <div><h3>Strengths</h3><ul><li>Keeps what you love about Ignition</li><li>Says "scanner" without a word, which is your main project</li><li>Points are cheap to draw live and razor-sharp at any size</li></ul></div>
+      <div><h3>Risks</h3><ul><li>The closest to what you already have, so the least surprising</li><li>A laser line is a metaphor: your scanner is phone-based. A truer version is phone-camera flashes around the object</li></ul></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="c">
+    <div class="head"><span class="tag" aria-hidden="true">C</span><h2 id="c">Toolpath</h2><span class="mono">Made, layer by layer</span></div>
+    <figure><img src="img/c-print.webp" width="1600" height="900" alt="A chess knight mid-print in optic-yellow plastic with visible layer lines; the current layer glows with gyroid infill under a brass nozzle, and the unprinted top of the knight is drawn in ice-blue lines."></figure>
+    <p class="idea">Everything gets made the way you make things. Below the nozzle it's solid plastic with real layer lines; the layer going down now glows; above it, the rest waits as an ice-blue drawing.</p>
+    <div class="cols">
+      <div><h3>In motion</h3><p>The nozzle races the outline, layers stack, the drawing above fills in. The infill is the gyroid, the same surface as the maths piece (slicers really use it), so one detail ties printing to mathematics.</p></div>
+      <div><h3>Strengths</h3><ul><li>The most "you": a maker, not just effects</li><li>Nobody else's portfolio opens like this</li><li>Comes straight from the site's drawing-sheet roots</li></ul></div>
+      <div><h3>Risks</h3><ul><li>Slower to read than fire; it needs a fast nozzle and a confident camera</li><li>The quietest of the three 3D options on first impression</li></ul></div>
+    </div>
+    <p class="flag"><span class="mono">Honesty check</span>You haven't told me you've printed a chess knight. In the real piece, only things you actually printed get printed (the scanner's calibration object is real), or you tell me you've printed one, or the knight is labelled as an illustration.</p>
+  </section>
+
+  <section aria-labelledby="d">
+    <div class="head"><span class="tag" aria-hidden="true">D</span><h2 id="d">Kinetic type</h2><span class="mono">Graphic · editorial</span></div>
+    <figure><img src="img/d-type.webp" width="1600" height="900" alt="The word TENNIS in huge white type with a flat optic-yellow ball over its last letters, knocking them out in black; speed lines trail the ball and an outlined CHESS enters from the top right."></figure>
+    <p class="idea">Flat colour and huge type. The ball is a disc that rolls through each word, knocking it out; the next word is already sliding in. At the end, the words are the menu.</p>
+    <div class="cols">
+      <div><h3>In motion</h3><p>Words slam in on the beat, the disc punches through, masks wipe to the next word. Crisp at any size, and the ending is simply the five words, now links.</p></div>
+      <div><h3>Strengths</h3><ul><li>Light, fast, works on every phone and even without a GPU</li><li>The most legible: it reads as words first</li><li>Easy to make accessible</li></ul></div>
+      <div><h3>Risks</h3><ul><li>The least "3D wow", which was the site's original promise</li><li>Big type can feel like text, and phones were meant to get less text</li></ul></div>
+    </div>
+  </section>
+
+  <div class="rec" aria-labelledby="rec">
+    <div class="head"><span class="tag" aria-hidden="true">★</span><h2 id="rec">My recommendation: A, then B, then C, as one arc</h2></div>
+    <div class="arc">
+      <figure><img src="img/a-ad.webp" width="1600" height="900" alt=""><span class="mono">Real · the ball, shot like an ad</span></figure>
+      <figure><img src="img/b-scan.webp" width="1600" height="900" alt=""><span class="mono">Scanned · it becomes points</span></figure>
+      <figure><img src="img/c-print.webp" width="1600" height="900" alt=""><span class="mono">Made · the points get printed</span></figure>
+    </div>
+    <p>Real, then scanned, then made is the foot scanner's own pipeline: capture a real thing, turn it into data, make something physical from it. If the opening follows that order, the style itself says what you do, before any text does. Each look gets one job, which also keeps it to one thing moving at a time: the ad look for the first two seconds of "wow", the scan for every transition, the print for the ending, where the page itself gets built. D's discipline (big, plain type) goes on the labels.</p>
+    <p>Choosing it doesn't lock in a medium. That's round 2.</p>
+  </div>
+
+  <div class="how">
+    <span class="mono">How these were made</span>
+    <p>Rendered in this session with three.js, in software (this cloud computer has no GPU), at twice the size and scaled down. The knight and the gyroid come from the site's own code. Frame A's fire is a volume, not sprites, and its felt is 32 layers of fuzz, which is why the edge goes soft. The timecode in A is decoration. "Where the scanner started" is the current site's wording for the tennis piece.</p>
+  </div>
+</div>

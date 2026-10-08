@@ -1,0 +1,20 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>A · Ad cut</title>
+<link rel="stylesheet" href="frame.css" />
+<style>
+  .cap { position: absolute; left: 40px; bottom: 40px; }
+  .cap b { display: block; font-family: var(--display); font-weight: 700; font-size: 15px; letter-spacing: 0.02em; margin-bottom: 8px; color: var(--frost); }
+  .ctl { position: absolute; right: 40px; bottom: 34px; display: flex; gap: 8px; }
+  .rail { position: absolute; left: 40px; top: 36px; color: var(--mist); }
+  .tc { position: absolute; right: 40px; top: 36px; color: var(--mist); }
+  @media (max-width: 600px) { .cap { left: 24px; bottom: 96px; } .ctl { left: 24px; right: auto; bottom: 28px; } .rail { left: 24px; top: 24px; } .tc { right: 24px; top: 24px; } }
+</style>
+<canvas></canvas>
+<div class="ov">
+  <div class="rail mono">About · Brandon Greene</div>
+  <div class="tc mono">00:01.6</div>
+  <div class="cap mono">01 · Tennis</div>
+  <div class="ctl"><span class="btn">Skip intro</span><span class="btn">Mute</span></div>
+</div>
+<script type="module" src="out/a-ad.js"></script>

@@ -1,0 +1,57 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>D · Kinetic type</title>
+<link rel="stylesheet" href="frame.css" />
+<style>
+  svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .word { font-family: var(--display); font-weight: 800; letter-spacing: 0.005em; }
+  .cap { position: absolute; left: 40px; bottom: 40px; }
+  .ctl { position: absolute; right: 40px; bottom: 34px; display: flex; gap: 8px; }
+  .rail { position: absolute; left: 40px; top: 36px; color: var(--mist); }
+  .idx { position: absolute; right: 40px; top: 36px; color: var(--mist); }
+  .note { position: absolute; left: 40px; top: 728px; color: var(--ball); }
+  @media (max-width: 600px) { .cap { left: 24px; bottom: 96px; } .ctl { left: 24px; right: auto; bottom: 28px; } .rail { left: 24px; top: 24px; } .idx { right: 24px; top: 24px; } .note { left: 24px; top: auto; bottom: 140px; } }
+</style>
+<svg id="s"></svg>
+<div class="ov">
+  <div class="rail mono">About · Brandon Greene</div>
+  <div class="idx mono">01 / 05</div>
+  <div class="note mono">Where the scanner started</div>
+  <div class="cap mono">01 · Tennis</div>
+  <div class="ctl"><span class="btn">Skip intro</span><span class="btn">Mute</span></div>
+</div>
+<script type="module">
+  const phone = location.search.includes('phone');
+  const W = innerWidth, H = innerHeight;
+  const s = document.getElementById('s');
+  s.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  await document.fonts.load('800 100px Unbounded');
+
+  // Big word, the ball through it, and the next word arriving.
+  const size = phone ? 92 : 236, base = phone ? 470 : 560, x0 = phone ? 18 : 40;
+  const cx = phone ? 250 : 1090, cy = phone ? 395 : 468, r = phone ? 120 : 214;
+  // The seam, flattened: two facing curves, like the ball seen side-on.
+  const seam = (k) => `M ${cx - r * 0.62} ${cy - r * 0.79} C ${cx - r * 0.12} ${cy - r * 0.35}, ${cx - r * 0.12} ${cy + r * 0.35}, ${cx - r * 0.62} ${cy + r * 0.79}
+                       M ${cx + r * 0.62} ${cy - r * 0.79} C ${cx + r * 0.12} ${cy - r * 0.35}, ${cx + r * 0.12} ${cy + r * 0.35}, ${cx + r * 0.62} ${cy + r * 0.79}`;
+  const lines = [-0.62, -0.38, -0.12, 0.14, 0.4, 0.66].map((f, i) => {
+    const y = cy + f * r, half = Math.sqrt(1 - f * f) * r;
+    const len = (phone ? 120 : 420) * [0.55, 0.9, 1.0, 0.75, 0.95, 0.5][i];
+    const x2 = cx - half + 6;
+    return `<line x1="${x2 - len}" y1="${y}" x2="${x2}" y2="${y}" stroke="#D4FF3A" stroke-width="${[2, 4, 7, 5, 3, 2][i]}" stroke-linecap="round" opacity="${[0.35, 0.6, 0.9, 0.75, 0.5, 0.3][i]}"/>`;
+  }).join('');
+  s.innerHTML = `
+    <defs>
+      <clipPath id="disc"><circle cx="${cx}" cy="${cy}" r="${r}"/></clipPath>
+      <linearGradient id="trail" x1="0" x2="1"><stop offset="0" stop-color="#D4FF3A" stop-opacity="0"/><stop offset="1" stop-color="#D4FF3A" stop-opacity="1"/></linearGradient>
+    </defs>
+    <g>${lines}</g>
+    <text class="word" x="${x0}" y="${base}" font-size="${size}" fill="#EEF2F7">TENNIS</text>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="#D4FF3A"/>
+    <text class="word" x="${x0}" y="${base}" font-size="${size}" fill="#05060A" clip-path="url(#disc)">TENNIS</text>
+    <path d="${seam()}" fill="none" stroke="#05060A" stroke-width="${phone ? 6 : 11}" stroke-linecap="round" clip-path="url(#disc)" opacity="0.92"/>
+    <text class="word" x="${phone ? 230 : 1290}" y="${phone ? 190 : 250}" font-size="${phone ? 110 : 200}" fill="none" stroke="#4DF3FF" stroke-width="1.5" opacity="0.75">CHESS</text>
+    <line x1="${phone ? 24 : 40}" y1="${phone ? 540 : 712}" x2="${phone ? W - 24 : W - 40}" y2="${phone ? 540 : 712}" stroke="#5B677B" stroke-width="1"/>
+  `;
+  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+  window.__done = true;
+</script>

@@ -1,0 +1,24 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>C · Toolpath</title>
+<link rel="stylesheet" href="frame.css" />
+<style>
+  svg .centre { stroke: var(--ice); stroke-opacity: 0.35; stroke-width: 1; stroke-dasharray: 18 5 3 5; fill: none; }
+  svg .lead { stroke: var(--frost); stroke-opacity: 0.7; stroke-width: 1; fill: none; }
+  svg .dot { fill: none; stroke: var(--frost); stroke-width: 1.2; }
+  [data-lab] { position: absolute; width: 330px; text-align: right; }
+  [data-lab] b { display: block; font-family: var(--display); font-weight: 700; font-size: 30px; letter-spacing: -0.02em; text-transform: none; color: var(--frost); margin-bottom: 6px; }
+  .cap { position: absolute; left: 40px; bottom: 40px; }
+  .ctl { position: absolute; right: 40px; bottom: 34px; display: flex; gap: 8px; }
+  .rail { position: absolute; left: 40px; top: 36px; color: var(--mist); }
+  @media (max-width: 600px) { .cap { left: 24px; bottom: 96px; } .ctl { left: 24px; right: auto; bottom: 28px; } .rail { left: 24px; top: 24px; } }
+</style>
+<canvas></canvas>
+<div class="ov">
+  <svg width="100%" height="100%" style="position:absolute;inset:0"></svg>
+  <div data-lab class="mono" style="color:var(--ice)"><b>Chess</b>02 · printed layer by layer</div>
+  <div class="rail mono">About · Brandon Greene</div>
+  <div class="cap mono">02 · Chess</div>
+  <div class="ctl"><span class="btn">Skip intro</span><span class="btn">Mute</span></div>
+</div>
+<script type="module" src="out/c-print.js"></script>

@@ -1,0 +1,28 @@
+/* Shared by every style frame: the site's own fonts and palette. */
+@font-face { font-family: 'Unbounded'; font-weight: 500; src: url('/fonts/Unbounded-latin-500.woff2') format('woff2'); }
+@font-face { font-family: 'Unbounded'; font-weight: 700; src: url('/fonts/Unbounded-latin-700.woff2') format('woff2'); }
+@font-face { font-family: 'Unbounded'; font-weight: 800; src: url('/fonts/Unbounded-latin-800.woff2') format('woff2'); }
+@font-face { font-family: 'IBM Plex Mono'; font-weight: 400; src: url('/fonts/IBMPlexMono-latin-400.woff2') format('woff2'); }
+@font-face { font-family: 'Atkinson Hyperlegible Next'; font-weight: 400; src: url('/fonts/AtkinsonHyperlegibleNext-latin-400.woff2') format('woff2'); }
+@font-face { font-family: 'Atkinson Hyperlegible Next'; font-weight: 700; src: url('/fonts/AtkinsonHyperlegibleNext-latin-700.woff2') format('woff2'); }
+
+:root {
+  --void: #05060A; --surface: #0B0F17; --frost: #EEF2F7; --mist: #8A94A6;
+  --ice: #4DF3FF; --violet: #8B5CFF; --ball: #D4FF3A; --signal: #FF5A4E;
+  --rule: #5B677B; --hairline: #1A2130;
+  --display: 'Unbounded', sans-serif;
+  --mono: 'IBM Plex Mono', monospace;
+  --body: 'Atkinson Hyperlegible Next', sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--void); color: var(--frost); overflow: hidden; }
+body { font-family: var(--body); }
+canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.ov { position: absolute; inset: 0; pointer-events: none; }
+.mono { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.16em; font-size: 12px; }
+.btn {
+  font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.1em; font-size: 11px;
+  padding: 0 14px; height: 36px; display: inline-flex; align-items: center;
+  border: 1px solid color-mix(in srgb, var(--frost) 35%, transparent);
+  background: color-mix(in srgb, var(--void) 70%, transparent); color: var(--frost);
+}
