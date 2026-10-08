@@ -57,6 +57,25 @@ TO CONFIRM whether they stay among the dozen.
 - **Voiceover:** short, in his voice: two sentences, about 8 seconds, with
   captions; effects underneath; works muted.
 
+## 8 Oct 2026: round 2 answers
+
+- **Tennis:** trains with a private coach 2 hours a day, 6 days a week,
+  except in tournament weeks; tournaments twice a month. High school team
+  (never name the school). Wants to play in college.
+  (Consistent with "at least 12 hours every week".) On screen: hours per
+  week are fine; days and times are not (no daily routine on the site).
+- **Boxing:** training/boxing 3 days a week. "Include boxing in the hobbies
+  section."
+- **Academics:** GPA as well, course rigor, and "leave it implied". Read as:
+  the animation implies it; the academics page later shows course rigor and
+  GPA. TO CONFIRM the exact GPA (and weighted or unweighted) when that page is
+  made; nothing goes up until he gives the number.
+- **Pages:** "don't worry about any of the specific pages, we're doing the
+  animation." → Scope is the animation. Each piece links to a page later;
+  until a page exists, the piece goes to a section of the About page.
+- **Already exists:** tennis video, outdoors video, photos. (No piano
+  recording yet.) Every frame gets the privacy check before use.
+
 ## Open questions
 
 - How the dozen are organised (more options, later).
