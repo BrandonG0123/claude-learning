@@ -129,6 +129,17 @@ Category map (confirmed in round 4):
 - **Interaction:** plays by itself; any key, click or scroll skips to the
   end; once settled, everything responds to the pointer.
 
+## 8 Oct 2026: round 7 answers
+
+- **Recording:** build with stand-ins; he drops in the real voiceover, piano
+  and sounds whenever they're ready. Nothing waits on him.
+- **Tennis clip:** his existing video, if it passes the privacy check; a
+  slow-motion serve can replace it later.
+- **Script:** Claude drafts from his own words; he edits.
+- **Files:** a Google Drive folder he shares (Drive is connected to the
+  session).
+
 ## Open questions
 
-- Per item: specifics, how long, what he loves about it, what media exists.
+- Item labels and emblems: drafted in the treatment, for him to correct.
+- The exact GPA: for the School page later, not the animation.
