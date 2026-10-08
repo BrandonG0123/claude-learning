@@ -43,9 +43,21 @@ Example given: his values, as one of the dozen, with its own page.
 project), the AI/ML independent study, mathematics, 3D printing, hardware.
 TO CONFIRM whether they stay among the dozen.
 
+## 8 Oct 2026: round 1 answers
+
+- **Audience:** "it's my own webpage so for everything. I'm only a sophomore
+  so not entirely college though, so it's for me and it's a fun thing, but
+  everything to that extent." Also ticked: college admissions, college tennis
+  coaches, the independent study, programs and mentors.
+  → It's his own site first, and fun; it must also hold up for all four.
+- **How the dozen are organised:** "ask me again later with more options."
+- **Projects (foot scanner, ML study, maths, 3D printing):** "my projects
+  section in the animation." → One Projects piece among the dozen, linking
+  to the projects.
+- **Voiceover:** short, in his voice: two sentences, about 8 seconds, with
+  captions; effects underneath; works muted.
+
 ## Open questions
 
-- Purposes and audiences (asked 8 Oct).
-- How the dozen are organised; the big two.
-- Voiceover (his call deferred to Claude; recommendation given).
+- How the dozen are organised (more options, later).
 - Per item: specifics, how long, what he loves about it, what media exists.
