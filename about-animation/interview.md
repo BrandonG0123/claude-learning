@@ -101,6 +101,18 @@ Category map (confirmed in round 4):
   items; the others break down when hovered or tapped. Keeps it near 10 s.
 - **Centre label:** "Self-improvement".
 
+## 8 Oct 2026: round 5 answers
+
+- **Look:** the A → B → C arc: the ad-style burning ball opens, a scan
+  carries every transition, the constellation is printed into place at the
+  end.
+- **Medium:** hybrid. The first ~3 s are video rendered at full quality,
+  handing off seamlessly to a live 3D scene for the interactive
+  constellation.
+- **Footage:** inside the pieces. When a category breaks down, each item
+  opens on a few seconds of his real clip. Every frame gets the privacy check.
+- **Length:** about 12 s before it settles into the page.
+
 ## Open questions
 
 - Per item: specifics, how long, what he loves about it, what media exists.
