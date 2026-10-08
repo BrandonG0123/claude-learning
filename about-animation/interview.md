@@ -76,7 +76,24 @@ TO CONFIRM whether they stay among the dozen.
 - **Already exists:** tennis video, outdoors video, photos. (No piano
   recording yet.) Every frame gets the privacy check before use.
 
+## 8 Oct 2026: round 3 answers
+
+- **Structure:** self-improvement at the centre; everything orbits it.
+- **Chess:** "why don't you do categories, like hobbies itself is one
+  category which breaks down to include chess in part of the animation."
+  → Two levels: categories orbit the centre, and each category breaks down
+  into its items in the animation. Chess is an item under Hobbies.
+- **Skiing, surfing, hiking, biking:** four separate pieces (under Hobbies).
+
+Draft category map (to confirm, round 4):
+- Centre: self-improvement (his values)
+- Tennis: private coach, tournaments, high school team, playing in college
+- School: course rigor, GPA (page later), the AI/ML independent study
+- Projects: foot scanner, machine learning, maths, 3D printing
+- Coding: web (HTML, CSS, JavaScript), C++, Python
+- Hobbies: skiing, surfing, hiking, biking, boxing, piano, chess, swimming
+- Mind: psychology, deep conversations, time spent thinking
+
 ## Open questions
 
-- How the dozen are organised (more options, later).
 - Per item: specifics, how long, what he loves about it, what media exists.
